@@ -1,0 +1,16 @@
+---
+Language: Cpp
+BasedOnStyle: Microsoft
+IndentWidth: 4
+TabWidth: 4
+UseTab: Never
+ColumnLimit: 0
+IncludeBlocks: Preserve
+BreakBeforeBraces: Custom
+DerivePointerAlignment: false
+PointerAlignment: Left
+ReflowComments: true
+---
+Language: Proto
+BasedOnStyle: Google
+...
