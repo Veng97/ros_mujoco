@@ -3,6 +3,10 @@ services:
     container_name: ros-mujoco-dev
     image: ros-mujoco
 
+    build:
+      context: ..
+      dockerfile: .devcontainer/dockerfile
+
     ipc: host
     network_mode: host
     privileged: true
