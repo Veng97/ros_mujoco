@@ -7,11 +7,6 @@ from launch.substitutions import LaunchConfiguration
 
 
 def generate_launch_description():
-    # Get the MUJOCO_DIR environment variable
-    mujoco_dir = os.getenv("MUJOCO_DIR", None)
-    if not mujoco_dir:
-        raise ValueError("MUJOCO_DIR environment variable is not set!")
-
     return LaunchDescription(
         [
             DeclareLaunchArgument(

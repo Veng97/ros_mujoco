@@ -8,7 +8,6 @@ Plugin to publish clock topic.
 All of the following attributes are optional.
 - `topic_name`: Topic name of clock. (Default is `/clock`)
 - `publish_rate`: Publish rate. (Default is 100.0 [Hz])
-- `use_sim_time`: Value of `use_sim_time` rosparam. (Default is `true`)
 
 An example of tags to be added to the MJCF file:
 ```xml
@@ -19,7 +18,6 @@ An example of tags to be added to the MJCF file:
   <plugin plugin="RosMujoco::ClockPublisher">
     <config key="topic_name" value="/clock"/>
     <config key="publish_rate" value="100"/>
-    <config key="use_sim_time" value="true"/>
   </plugin>
 </worldbody>
 ```
@@ -162,3 +160,7 @@ An example of tags to be added to the MJCF file:
 ```
 In the `plugin` element, you need to specify the `objtype` and `objname`.
 This information is not used in the plugin, but is necessary to avoid errors in MJCF parsing.
+
+
+## Development
+The development environment is integrated with VSCode. To use it simply open VSCode and run the task to open the workspace in the dev-container.

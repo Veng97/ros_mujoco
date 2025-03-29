@@ -78,6 +78,7 @@ install(
   FILES_MATCHING PATTERN "*"
 )
 
+# Install library within the MuJoCo plugin directory
 install(
   TARGETS RosMujocoPlugin
   EXPORT "${TARGETS_EXPORT_NAME}"
@@ -85,10 +86,6 @@ install(
   ARCHIVE DESTINATION "share/${PROJECT_NAME}/mujoco/mujoco_plugin"
   RUNTIME DESTINATION "${CMAKE_INSTALL_BINDIR}"
 )
-
-# install(
-#   CODE "execute_process(COMMAND ${CMAKE_COMMAND} -E copy \$<TARGET_FILE:RosMujocoPlugin> \$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/share/${PROJECT_NAME}/bin/mujoco_plugin/libRosMujocoPlugin.so)"
-# )
 
 # Install files
 install(
