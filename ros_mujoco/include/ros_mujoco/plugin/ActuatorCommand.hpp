@@ -1,6 +1,6 @@
 #pragma once
 
-#include "RosContext.h"
+#include "ros_mujoco/plugin/RosContext.hpp"
 #include <rclcpp/subscription.hpp>
 
 #include <rclcpp/rclcpp.hpp>

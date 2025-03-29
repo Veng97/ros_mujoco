@@ -1,4 +1,4 @@
-#include "ClockPublisher.h"
+#include "ros_mujoco/plugin/ClockPublisher.hpp"
 
 #include <mujoco/mujoco.h>
 
@@ -66,6 +66,11 @@ void ClockPublisher::registerPlugin()
 
 ClockPublisher* ClockPublisher::create(const mjModel* m, mjData* d, int plugin_id)
 {
+    if (m->body_plugin[0] != plugin_id)
+    {
+        mju_error("[ClockPublisher] This plugin must be registered in worldbody.");
+        return nullptr;
+    }
 
     // Option: topic_name
     const char* topic_name_char = mj_getPluginConfig(m, plugin_id, "topic_name");
@@ -85,12 +90,6 @@ ClockPublisher* ClockPublisher::create(const mjModel* m, mjData* d, int plugin_i
     if (publish_rate <= 0)
     {
         mju_error("[ClockPublisher] `publish_rate` must be positive.");
-        return nullptr;
-    }
-
-    if (m->body_plugin[0] != plugin_id)
-    {
-        mju_error("[ClockPublisher] This plugin must be registered in worldbody.");
         return nullptr;
     }
 

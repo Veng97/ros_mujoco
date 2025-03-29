@@ -1,4 +1,4 @@
-#include "ExternalForce.h"
+#include "ros_mujoco/plugin/ExternalForce.hpp"
 
 #include <mujoco/mujoco.h>
 

@@ -1,11 +1,11 @@
 #include <mujoco/mjplugin.h>
 
-#include "ActuatorCommand.h"
-#include "ClockPublisher.h"
-#include "ExternalForce.h"
-#include "ImagePublisher.h"
-#include "PosePublisher.h"
-#include "SensorPublisher.h"
+#include "ros_mujoco/plugin/ActuatorCommand.hpp"
+#include "ros_mujoco/plugin/ClockPublisher.hpp"
+#include "ros_mujoco/plugin/ExternalForce.hpp"
+#include "ros_mujoco/plugin/ImagePublisher.hpp"
+#include "ros_mujoco/plugin/PosePublisher.hpp"
+#include "ros_mujoco/plugin/SensorPublisher.hpp"
 
 namespace RosMujoco
 {

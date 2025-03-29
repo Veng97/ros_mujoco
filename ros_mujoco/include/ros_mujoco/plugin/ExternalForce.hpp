@@ -1,6 +1,6 @@
 #pragma once
 
-#include "RosContext.h"
+#include "ros_mujoco/plugin/RosContext.hpp"
 
 #include <rclcpp/subscription.hpp>
 #include <ros_mujoco_interfaces/msg/external_force.hpp>

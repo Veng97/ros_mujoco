@@ -9,7 +9,6 @@
 				"ms-vscode.cpptools", // Adds debugging features to VSCode
 				"jeff-hykin.better-cpp-syntax", // Cpp highlighting
 				"zchrissirhcz.cmake-highlight", // CMake highlighting
-				"smilerobotics.urdf", // URDF highlighting
 				"ms-python.python", // Python highlighting
 				"charliermarsh.ruff", // Python formatting and linting
 				"mhutchie.git-graph", // Visual representation of the Git tree

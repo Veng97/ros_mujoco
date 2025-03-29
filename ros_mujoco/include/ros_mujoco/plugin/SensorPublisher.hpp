@@ -1,6 +1,6 @@
 #pragma once
 
-#include "RosContext.h"
+#include "ros_mujoco/plugin/RosContext.hpp"
 
 #include <geometry_msgs/msg/point_stamped.hpp>
 #include <geometry_msgs/msg/quaternion_stamped.hpp>

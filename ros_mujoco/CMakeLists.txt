@@ -20,7 +20,7 @@ set(MUJOCO_INSTALL_DIR "${CMAKE_CURRENT_BINARY_DIR}/mujoco")
 # Set the MuJoCo variables
 set(MUJOCO_INCLUDE_DIR "${MUJOCO_INSTALL_DIR}/include")
 set(MUJOCO_BIN_DIR "${MUJOCO_INSTALL_DIR}/bin")
-set(MUJOCO_LIB "${MUJOCO_INSTALL_DIR}/lib/libmujoco.so")
+set(MUJOCO_LIB_DIR "${MUJOCO_INSTALL_DIR}/lib")
 
 # Add MuJoCo as an external project
 ExternalProject_Add(
@@ -54,36 +54,38 @@ endforeach()
 # Create ROS2 plugin
 add_library(
   RosMujocoPlugin SHARED
-  src/Plugin.cpp
-  src/RosContext.cpp
-  src/ActuatorCommand.cpp
-  src/ClockPublisher.cpp
-  src/ExternalForce.cpp
-  src/ImagePublisher.cpp 
-  src/PosePublisher.cpp
-  src/SensorPublisher.cpp
+  src/plugin/Plugin.cpp
+  src/plugin/RosContext.cpp
+  src/plugin/ActuatorCommand.cpp
+  src/plugin/ClockPublisher.cpp
+  src/plugin/ExternalForce.cpp
+  src/plugin/ImagePublisher.cpp 
+  src/plugin/PosePublisher.cpp
+  src/plugin/SensorPublisher.cpp
 )
 
 add_dependencies(RosMujocoPlugin mujoco)
 target_include_directories(RosMujocoPlugin PUBLIC ${PROJECT_SOURCE_DIR}/include PRIVATE ${MUJOCO_INCLUDE_DIR})
-target_link_libraries(RosMujocoPlugin ${MUJOCO_LIB} glfw)
+target_link_libraries(RosMujocoPlugin glfw ${MUJOCO_LIB_DIR}/libmujoco.so)
 
 ament_target_dependencies(RosMujocoPlugin ${THIS_PACKAGE_INCLUDE_DEPENDS})
 
-# Install MuJoCo binaries (without creating a symlink so that the 'simulate' executable is able to find local libraries/plugins)
+set(MUJOCO_SHARE_DIR "share/${PROJECT_NAME}/mujoco")
+
+# Install MuJoCo (without creating a symlink so that the 'simulate' executable is able to find local libraries/plugins)
 install(
-  DIRECTORY ${MUJOCO_BIN_DIR}/
-  DESTINATION share/${PROJECT_NAME}/mujoco
+  DIRECTORY ${MUJOCO_BIN_DIR} ${MUJOCO_LIB_DIR}
+  DESTINATION ${MUJOCO_SHARE_DIR}
   USE_SOURCE_PERMISSIONS
   FILES_MATCHING PATTERN "*"
 )
 
-# Install library within the MuJoCo plugin directory
+# Install library within the MuJoCo plugin directory (then the default MuJoCo executables can find it)
 install(
   TARGETS RosMujocoPlugin
   EXPORT "${TARGETS_EXPORT_NAME}"
-  LIBRARY DESTINATION "share/${PROJECT_NAME}/mujoco/mujoco_plugin"
-  ARCHIVE DESTINATION "share/${PROJECT_NAME}/mujoco/mujoco_plugin"
+  LIBRARY DESTINATION "${MUJOCO_SHARE_DIR}/bin/mujoco_plugin"
+  ARCHIVE DESTINATION "${MUJOCO_SHARE_DIR}/bin/mujoco_plugin"
   RUNTIME DESTINATION "${CMAKE_INSTALL_BINDIR}"
 )
 

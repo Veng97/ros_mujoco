@@ -1,6 +1,6 @@
 #pragma once
 
-#include "RosContext.h"
+#include "ros_mujoco/plugin/RosContext.hpp"
 
 #include <builtin_interfaces/msg/time.hpp>
 #include <rclcpp/publisher.hpp>

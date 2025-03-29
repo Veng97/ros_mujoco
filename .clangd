@@ -14,12 +14,12 @@ Diagnostics:
   # MissingIncludes: Strict
 
   ClangTidy:
-    Add: 
+    Add:
       - readability-*
       - modernize-*
       - performance-*
-    
-    Remove: 
+
+    Remove:
       - readability-magic-numbers
       - readability-identifier-length
       - readability-function-cognitive-complexity
@@ -44,22 +44,22 @@ Diagnostics:
       readability-identifier-naming.MemberCase: lower_case
       readability-identifier-naming.ClassMemberCase: lower_case
       readability-identifier-naming.PrivateMemberCase: lower_case
-      readability-identifier-naming.PrivateMemberSuffix: ''
+      readability-identifier-naming.PrivateMemberSuffix: ""
       readability-identifier-naming.PrivateMemberPrefix: m_
-      readability-identifier-naming.ProtectedMemberSuffix: ''
+      readability-identifier-naming.ProtectedMemberSuffix: ""
       readability-identifier-naming.ProtectedMemberPrefix: m_
-      readability-identifier-naming.PublicMemberSuffix: ''
-      readability-identifier-naming.PublicMemberPrefix: ''
-      readability-identifier-naming.EnumPrefix: ''
+      readability-identifier-naming.PublicMemberSuffix: ""
+      readability-identifier-naming.PublicMemberPrefix: ""
+      readability-identifier-naming.EnumPrefix: ""
       readability-identifier-naming.EnumConstantCase: UPPER_CASE
-      readability-identifier-naming.EnumConstantPrefix: ''
+      readability-identifier-naming.EnumConstantPrefix: ""
       readability-identifier-naming.ConstexprVariableCase: UPPER_CASE
-      readability-identifier-naming.ConstexprVariablePrefix: ''
+      readability-identifier-naming.ConstexprVariablePrefix: ""
       readability-identifier-naming.StaticConstantCase: lower_case
-      readability-identifier-naming.StaticConstantPrefix: ''
+      readability-identifier-naming.StaticConstantPrefix: ""
       readability-identifier-naming.TypeAliasCase: CamelCase
-      readability-identifier-naming.TypeAliasSuffix: ''
+      readability-identifier-naming.TypeAliasSuffix: ""
       readability-identifier-naming.TypedefCase: CamelCase
-      readability-identifier-naming.TypedefSuffix: ''
+      readability-identifier-naming.TypedefSuffix: ""
       readability-identifier-naming.IgnoreMainLikeFunctions: 1
       readability-implicit-bool-conversion.AllowIntegerConditions: 1

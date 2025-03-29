@@ -6,6 +6,10 @@ RUN apt-get update -y -qq && apt-get install -y -qq --no-install-recommends \
     git \
     ssh \
     cmake \
+    clang \
+    clangd \
+    clang-format \
+    clang-tidy \
     python3 \
     python3-pip \
     python3-argcomplete \
@@ -25,22 +29,6 @@ ENV LANG=en_US.UTF-8
 ENV LANGUAGE=en_US:en
 ENV LC_ALL=en_US.UTF-8
 
-# Dependencies for building/scanning/formatting (clang, clang-format, clang-tidy, clangd, ...)
-ARG LLVM_VERSION=20
-RUN curl -fsSL https://apt.llvm.org/llvm.sh | bash -s ${LLVM_VERSION} \
-    # Install clang development tools
-    && apt-get install -y -qq --no-install-recommends \
-    clang-tidy-${LLVM_VERSION} \
-    clang-format-${LLVM_VERSION} \
-    clangd-${LLVM_VERSION} \
-    # Create symbolic links for clang tools
-    && for tool in /usr/bin/clang*-${LLVM_VERSION}; do \
-    ln -sf "$tool" "/usr/bin/$(basename $tool | sed 's/-'${LLVM_VERSION}'//')"; \
-    done \
-    && apt-get autoremove -y \
-    && apt-get clean \
-    && rm -rf /var/lib/apt/lists/*
-
 
 ##############################
 # User Configuration 
@@ -59,15 +47,13 @@ RUN apt-get update -y -qq && apt-get install -y -qq --no-install-recommends \
 # ROS2
 ##############################
 ENV ROS_DISTRO=jazzy
-RUN apt-get update -y -qq && apt-get install -y -qq --no-install-recommends \
-    && curl -sSL https://raw.githubusercontent.com/ros/rosdistro/master/ros.key -o /usr/share/keyrings/ros-archive-keyring.gpg \
+RUN curl -sSL https://raw.githubusercontent.com/ros/rosdistro/master/ros.key -o /usr/share/keyrings/ros-archive-keyring.gpg \
     && echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/ros-archive-keyring.gpg] http://packages.ros.org/ros2/ubuntu $(lsb_release -cs) main" | tee /etc/apt/sources.list.d/ros2.list > /dev/null \
-    && apt-get update -y -qq && apt-get install -y -qq --no-install-recommends \
+    && apt-get update -y -qq \
+    && apt-get install -y -qq --no-install-recommends \
     ros-dev-tools \
     ros-${ROS_DISTRO}-ros-base \
-    # Rviz2
     ros-${ROS_DISTRO}-rviz2 \
-    # PlotJuggler
     ros-${ROS_DISTRO}-plotjuggler-ros \
     # Setup/update packages
     && rosdep init \

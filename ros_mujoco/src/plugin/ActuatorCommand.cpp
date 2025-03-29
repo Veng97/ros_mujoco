@@ -1,4 +1,4 @@
-#include "ActuatorCommand.h"
+#include "ros_mujoco/plugin/ActuatorCommand.hpp"
 
 #include <mujoco/mujoco.h>
 

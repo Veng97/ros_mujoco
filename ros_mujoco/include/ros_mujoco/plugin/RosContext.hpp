@@ -26,9 +26,10 @@ class RosContext
     std::shared_ptr<rclcpp::Node> getNode();
 
     /**
-     * \brief Spin node until all callbacks are complete.
-     * \param d mjData pointer, used to prevent spinning multiple times in the
-     * same time step.
+     * \brief Spin node until all callbacks are complete. Must be called by plugins with subscriptions/services that require spinning (publishing does not).
+     * \note This function will block until all callbacks are complete. It should be called by every plugin that has subscriptions/services that require spinning once pr. time step.
+     * Spinning multiple times in the same time step is prevented internally by checking the current simulation time.
+     * \param d mjData pointer, used to prevent spinning multiple times in the same time step.
      */
     void spinUntilComplete(const mjData* d);
 

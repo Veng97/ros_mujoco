@@ -1,4 +1,4 @@
-#include "ImagePublisher.h"
+#include "ros_mujoco/plugin/ImagePublisher.hpp"
 
 #include <mujoco/mujoco.h>
 

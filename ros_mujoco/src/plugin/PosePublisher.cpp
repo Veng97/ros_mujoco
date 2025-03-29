@@ -1,4 +1,4 @@
-#include "PosePublisher.h"
+#include "ros_mujoco/plugin/PosePublisher.hpp"
 
 #include <mujoco/mujoco.h>
 

@@ -1,4 +1,4 @@
-#include "RosContext.h"
+#include "ros_mujoco/plugin/RosContext.hpp"
 
 namespace RosMujoco
 {
@@ -13,13 +13,12 @@ RosContext::RosContext()
     executor_ = std::make_shared<rclcpp::executors::SingleThreadedExecutor>();
     executor_->add_node(node_);
 
-    std::cout << "[RosContext] Initialized with node: " << node_->get_name()
-              << "\n";
+    std::cout << "[RosContext] Initialized with node: " << node_->get_name() << "\n";
 }
 
 RosContext::~RosContext()
 {
-    std::cout << "[RosContext] Shutting down context" << std::endl;
+    std::cout << "[RosContext] Shutting down context\n";
 
     executor_.reset();
     node_.reset();
@@ -32,8 +31,7 @@ std::shared_ptr<RosContext> RosContext::getInstance()
     std::shared_ptr<RosContext> instance = instance_.lock();
     if (!instance)
     {
-        // Use a custom factory function instead of std::make_shared (which needs a
-        // public constructor)
+        // Use a custom factory function instead of std::make_shared (which needs a public constructor)
         struct MakeSharedEnabler : public RosContext
         {
         };

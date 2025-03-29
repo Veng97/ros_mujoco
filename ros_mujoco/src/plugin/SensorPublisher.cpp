@@ -1,4 +1,4 @@
-#include "SensorPublisher.h"
+#include "ros_mujoco/plugin/SensorPublisher.hpp"
 
 #include <mujoco/mujoco.h>
 
