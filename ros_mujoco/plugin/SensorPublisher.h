@@ -39,14 +39,14 @@ class SensorPublisher
 
   public:
     /** \brief Register plugin. */
-    static void RegisterPlugin();
+    static void registerPlugin();
 
     /** \brief Create an instance.
         \param m model
         \param d data
         \param plugin_id plugin ID
      */
-    static SensorPublisher* Create(const mjModel* m, mjData* d, int plugin_id);
+    static SensorPublisher* create(const mjModel* m, mjData* d, int plugin_id);
 
   public:
     /** \brief Copy constructor. */

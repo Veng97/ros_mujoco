@@ -7,7 +7,7 @@
 namespace RosMujoco
 {
 
-void ImagePublisher::RegisterPlugin()
+void ImagePublisher::registerPlugin()
 {
     mjpPlugin plugin;
     mjp_defaultPlugin(&plugin);
@@ -35,7 +35,7 @@ void ImagePublisher::RegisterPlugin()
     plugin.needstage = mjSTAGE_VEL;
 
     plugin.init = +[](const mjModel* m, mjData* d, int plugin_id) {
-        auto* plugin_instance = ImagePublisher::Create(m, d, plugin_id);
+        auto* plugin_instance = ImagePublisher::create(m, d, plugin_id);
         if (!plugin_instance)
         {
             return -1;
@@ -70,7 +70,7 @@ void ImagePublisher::RegisterPlugin()
     mjp_registerPlugin(&plugin);
 }
 
-ImagePublisher* ImagePublisher::Create(const mjModel* m, mjData* d,
+ImagePublisher* ImagePublisher::create(const mjModel* m, mjData* d,
                                        int plugin_id)
 {
     // frame_id

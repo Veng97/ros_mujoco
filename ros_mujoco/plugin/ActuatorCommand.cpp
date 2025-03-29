@@ -7,7 +7,7 @@
 namespace RosMujoco
 {
 
-void ActuatorCommand::RegisterPlugin()
+void ActuatorCommand::registerPlugin()
 {
     mjpPlugin plugin;
     mjp_defaultPlugin(&plugin);
@@ -35,7 +35,7 @@ void ActuatorCommand::RegisterPlugin()
     plugin.needstage = mjSTAGE_VEL;
 
     plugin.init = +[](const mjModel* m, mjData* d, int plugin_id) {
-        auto* plugin_instance = ActuatorCommand::Create(m, d, plugin_id);
+        auto* plugin_instance = ActuatorCommand::create(m, d, plugin_id);
         if (!plugin_instance)
         {
             return -1;
@@ -67,7 +67,7 @@ void ActuatorCommand::RegisterPlugin()
     mjp_registerPlugin(&plugin);
 }
 
-ActuatorCommand* ActuatorCommand::Create(const mjModel* m, mjData* d,
+ActuatorCommand* ActuatorCommand::create(const mjModel* m, mjData* d,
                                          int plugin_id)
 {
     // actuator_name

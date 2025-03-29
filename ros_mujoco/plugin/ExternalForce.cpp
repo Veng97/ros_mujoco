@@ -7,7 +7,7 @@
 namespace RosMujoco
 {
 
-void ExternalForce::RegisterPlugin()
+void ExternalForce::registerPlugin()
 {
     mjpPlugin plugin;
     mjp_defaultPlugin(&plugin);
@@ -32,7 +32,7 @@ void ExternalForce::RegisterPlugin()
     plugin.needstage = mjSTAGE_ACC;
 
     plugin.init = +[](const mjModel* m, mjData* d, int plugin_id) {
-        auto* plugin_instance = ExternalForce::Create(m, d, plugin_id);
+        auto* plugin_instance = ExternalForce::create(m, d, plugin_id);
         if (!plugin_instance)
         {
             return -1;
@@ -71,7 +71,7 @@ void ExternalForce::RegisterPlugin()
     mjp_registerPlugin(&plugin);
 }
 
-ExternalForce* ExternalForce::Create(const mjModel* m, mjData* d,
+ExternalForce* ExternalForce::create(const mjModel* m, mjData* d,
                                      int plugin_id)
 {
     // topic_name

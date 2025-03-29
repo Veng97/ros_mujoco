@@ -47,7 +47,7 @@ Diagnostics:
       readability-identifier-naming.PrivateMemberSuffix: ''
       readability-identifier-naming.PrivateMemberPrefix: m_
       readability-identifier-naming.ProtectedMemberSuffix: ''
-      readability-identifier-naming.ProtectedMemberPrefix: ''
+      readability-identifier-naming.ProtectedMemberPrefix: m_
       readability-identifier-naming.PublicMemberSuffix: ''
       readability-identifier-naming.PublicMemberPrefix: ''
       readability-identifier-naming.EnumPrefix: ''

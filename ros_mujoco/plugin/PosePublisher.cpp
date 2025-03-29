@@ -7,7 +7,7 @@
 namespace RosMujoco
 {
 
-void PosePublisher::RegisterPlugin()
+void PosePublisher::registerPlugin()
 {
     mjpPlugin plugin;
     mjp_defaultPlugin(&plugin);
@@ -34,7 +34,7 @@ void PosePublisher::RegisterPlugin()
     plugin.needstage = mjSTAGE_VEL;
 
     plugin.init = +[](const mjModel* m, mjData* d, int plugin_id) {
-        auto* plugin_instance = PosePublisher::Create(m, d, plugin_id);
+        auto* plugin_instance = PosePublisher::create(m, d, plugin_id);
         if (!plugin_instance)
         {
             return -1;
@@ -66,7 +66,7 @@ void PosePublisher::RegisterPlugin()
     mjp_registerPlugin(&plugin);
 }
 
-PosePublisher* PosePublisher::Create(const mjModel* m, mjData* d,
+PosePublisher* PosePublisher::create(const mjModel* m, mjData* d,
                                      int plugin_id)
 {
     // frame_id

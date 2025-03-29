@@ -12,12 +12,12 @@ namespace RosMujoco
 
 mjPLUGIN_LIB_INIT
 {
-    ActuatorCommand::RegisterPlugin();
-    ClockPublisher::RegisterPlugin();
-    ExternalForce::RegisterPlugin();
-    ImagePublisher::RegisterPlugin();
-    PosePublisher::RegisterPlugin();
-    SensorPublisher::RegisterPlugin();
+    ActuatorCommand::registerPlugin();
+    ClockPublisher::registerPlugin();
+    ExternalForce::registerPlugin();
+    ImagePublisher::registerPlugin();
+    PosePublisher::registerPlugin();
+    SensorPublisher::registerPlugin();
 }
 
 } // namespace RosMujoco

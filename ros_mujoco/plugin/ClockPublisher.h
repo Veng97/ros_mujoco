@@ -3,6 +3,7 @@
 #include "RosContext.h"
 #include <rclcpp/publisher.hpp>
 
+#include <builtin_interfaces/msg/time.hpp>
 #include <rosgraph_msgs/msg/clock.hpp>
 
 #include <mujoco/mjdata.h>
@@ -21,16 +22,15 @@ class ClockPublisher
 {
   public:
     /** \brief Register plugin. */
-    static void RegisterPlugin();
+    static void registerPlugin();
 
     /** \brief Create an instance.
         \param m model
         \param d data
         \param plugin_id plugin ID
      */
-    static ClockPublisher* Create(const mjModel* m, mjData* d, int plugin_id);
+    static ClockPublisher* create(const mjModel* m, mjData* d, int plugin_id);
 
-  public:
     /** \brief Copy constructor. */
     ClockPublisher(ClockPublisher&&) = default;
 
@@ -47,7 +47,6 @@ class ClockPublisher
      */
     void compute(const mjModel* m, mjData* d, int plugin_id);
 
-  protected:
     /** \brief Constructor.
         \param m model
         \param d data
@@ -55,7 +54,7 @@ class ClockPublisher
         \param publish_rate publish rate
         \param use_sim_time value of `use_sim_time` rosparam
     */
-    ClockPublisher(const mjModel* m, mjData* d, const std::string& topic_name, mjtNum publish_rate);
+    ClockPublisher(const mjModel* m, mjData* d, const std::string& topic_name, const mjtNum& publish_rate);
 
   protected:
     //! ROS context

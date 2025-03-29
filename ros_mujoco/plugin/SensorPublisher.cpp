@@ -7,7 +7,7 @@
 namespace RosMujoco
 {
 
-void SensorPublisher::RegisterPlugin()
+void SensorPublisher::registerPlugin()
 {
     mjpPlugin plugin;
     mjp_defaultPlugin(&plugin);
@@ -34,7 +34,7 @@ void SensorPublisher::RegisterPlugin()
     plugin.needstage = mjSTAGE_ACC;
 
     plugin.init = +[](const mjModel* m, mjData* d, int plugin_id) {
-        auto* plugin_instance = SensorPublisher::Create(m, d, plugin_id);
+        auto* plugin_instance = SensorPublisher::create(m, d, plugin_id);
         if (!plugin_instance)
         {
             return -1;
@@ -66,7 +66,7 @@ void SensorPublisher::RegisterPlugin()
     mjp_registerPlugin(&plugin);
 }
 
-SensorPublisher* SensorPublisher::Create(const mjModel* m, mjData* d,
+SensorPublisher* SensorPublisher::create(const mjModel* m, mjData* d,
                                          int plugin_id)
 {
     // sensor_name

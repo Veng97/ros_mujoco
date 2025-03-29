@@ -2,14 +2,12 @@
 
 #include <mujoco/mujoco.h>
 
-#include <builtin_interfaces/msg/time.hpp>
 #include <iostream>
-#include <sstream>
 
 namespace RosMujoco
 {
 
-void ClockPublisher::RegisterPlugin()
+void ClockPublisher::registerPlugin()
 {
     mjpPlugin plugin;
     mjp_defaultPlugin(&plugin);
@@ -34,7 +32,7 @@ void ClockPublisher::RegisterPlugin()
     plugin.needstage = mjSTAGE_POS;
 
     plugin.init = +[](const mjModel* m, mjData* d, int plugin_id) {
-        auto* plugin_instance = ClockPublisher::Create(m, d, plugin_id);
+        auto* plugin_instance = ClockPublisher::create(m, d, plugin_id);
         if (!plugin_instance)
         {
             return -1;
@@ -66,10 +64,15 @@ void ClockPublisher::RegisterPlugin()
     mjp_registerPlugin(&plugin);
 }
 
-ClockPublisher* ClockPublisher::Create(const mjModel* m, mjData* d,
-                                       int plugin_id)
+ClockPublisher* ClockPublisher::create(const mjModel* m, mjData* d, int plugin_id)
 {
-    // topic_name
+    if (m->body_plugin[0] != plugin_id)
+    {
+        mju_error("[ClockPublisher] This plugin must be registered in worldbody.");
+        return nullptr;
+    }
+
+    // Option: topic_name
     const char* topic_name_char = mj_getPluginConfig(m, plugin_id, "topic_name");
     std::string topic_name = "";
     if (strlen(topic_name_char) > 0)
@@ -77,9 +80,8 @@ ClockPublisher* ClockPublisher::Create(const mjModel* m, mjData* d,
         topic_name = std::string(topic_name_char);
     }
 
-    // publish_rate
-    const char* publish_rate_char =
-        mj_getPluginConfig(m, plugin_id, "publish_rate");
+    // Option: publish_rate
+    const char* publish_rate_char = mj_getPluginConfig(m, plugin_id, "publish_rate");
     mjtNum publish_rate = 100.0;
     if (strlen(publish_rate_char) > 0)
     {
@@ -91,24 +93,12 @@ ClockPublisher* ClockPublisher::Create(const mjModel* m, mjData* d,
         return nullptr;
     }
 
-    if (m->body_plugin[0] != plugin_id)
-    {
-        mju_error("[ClockPublisher] This plugin must be registered in worldbody.");
-        return nullptr;
-    }
-
     return new ClockPublisher(m, d, topic_name, publish_rate);
 }
 
-ClockPublisher::ClockPublisher(const mjModel* m,
-                               mjData*, // d
-                               const std::string& topic_name,
-                               mjtNum publish_rate)
-    : ros_context_(RosContext::getInstance()), topic_name_(topic_name),
-      publish_skip_(std::max(
-          static_cast<int>(1.0 / (publish_rate * m->opt.timestep)), 1))
+ClockPublisher::ClockPublisher(const mjModel* m, mjData*, const std::string& topic_name, const mjtNum& publish_rate)
+    : ros_context_(RosContext::getInstance()), topic_name_(topic_name), publish_skip_(std::max(static_cast<int>(1. / (publish_rate * m->opt.timestep)), 1))
 {
-
     std::cout << "[ClockPublisher] Configuring:" << "\n";
     std::cout << "  - topic_name: " << topic_name << "\n";
     std::cout << "  - publish_rate: " << publish_rate << "\n";
@@ -118,21 +108,15 @@ ClockPublisher::ClockPublisher(const mjModel* m,
         topic_name_ = "/clock";
     }
 
-    pub_ = ros_context_->getNode()->create_publisher<rosgraph_msgs::msg::Clock>(
-        topic_name, 1);
+    pub_ = ros_context_->getNode()->create_publisher<rosgraph_msgs::msg::Clock>(topic_name, 1);
 }
 
-void ClockPublisher::reset(const mjModel*, // m
-                           int             // plugin_id
-)
+void ClockPublisher::reset(const mjModel*, int)
 {
     iteration_count_ = 0;
 }
 
-void ClockPublisher::compute(const mjModel*, // m
-                             mjData* d,
-                             int // plugin_id
-)
+void ClockPublisher::compute(const mjModel*, mjData* d, int)
 {
     ++iteration_count_;
     if (iteration_count_ % publish_skip_ != 0)
