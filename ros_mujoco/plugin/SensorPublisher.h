@@ -14,92 +14,95 @@
 #include <ros_mujoco/msg/scalar_stamped.hpp>
 #include <string>
 
-namespace RosMujoco {
+namespace RosMujoco
+{
 
 /** \brief Plugin to publish sensor data. */
-class SensorPublisher {
-public:
-  /** \brief Type of ROS message. */
-  using MessageType = enum class MessageType : std::uint8_t {
-    //! Scalar
-    Scalar = 0,
+class SensorPublisher
+{
+  public:
+    /** \brief Type of ROS message. */
+    using MessageType = enum class MessageType : std::uint8_t
+    {
+        //! Scalar
+        Scalar = 0,
 
-    //! Point
-    Point,
+        //! Point
+        Point,
 
-    //! 3D vector
-    Vector3,
+        //! 3D vector
+        Vector3,
 
-    //! Quaternion
-    Quaternion
-  };
+        //! Quaternion
+        Quaternion
+    };
 
-public:
-  /** \brief Register plugin. */
-  static void RegisterPlugin();
+  public:
+    /** \brief Register plugin. */
+    static void RegisterPlugin();
 
-  /** \brief Create an instance.
-      \param m model
-      \param d data
-      \param plugin_id plugin ID
-   */
-  static SensorPublisher *Create(const mjModel *m, mjData *d, int plugin_id);
+    /** \brief Create an instance.
+        \param m model
+        \param d data
+        \param plugin_id plugin ID
+     */
+    static SensorPublisher* Create(const mjModel* m, mjData* d, int plugin_id);
 
-public:
-  /** \brief Copy constructor. */
-  SensorPublisher(SensorPublisher &&) = default;
+  public:
+    /** \brief Copy constructor. */
+    SensorPublisher(SensorPublisher&&) = default;
 
-  /** \brief Reset.
-      \param m model
-      \param plugin_id plugin ID
-   */
-  void reset(const mjModel *m, int plugin_id);
+    /** \brief Reset.
+        \param m model
+        \param plugin_id plugin ID
+     */
+    void reset(const mjModel* m, int plugin_id);
 
-  /** \brief Compute.
-      \param m model
-      \param d data
-      \param plugin_id plugin ID
-   */
-  void compute(const mjModel *m, mjData *d, int plugin_id);
+    /** \brief Compute.
+        \param m model
+        \param d data
+        \param plugin_id plugin ID
+     */
+    void compute(const mjModel* m, mjData* d, int plugin_id);
 
-protected:
-  /** \brief Constructor.
-      \param m model
-      \param d data
-      \param sensor_id sensor ID
-      \param msg_type type of ROS message
-      \param frame_id frame ID of message header
-      \param topic_name topic name
-      \param publish_rate publish rate
-   */
-  SensorPublisher(const mjModel *m, mjData *d, int sensor_id,
-                  MessageType msg_type, const std::string &frame_id,
-                  const std::string &topic_name, mjtNum publish_rate);
+  protected:
+    /** \brief Constructor.
+        \param m model
+        \param d data
+        \param sensor_id sensor ID
+        \param msg_type type of ROS message
+        \param frame_id frame ID of message header
+        \param topic_name topic name
+        \param publish_rate publish rate
+     */
+    SensorPublisher(const mjModel* m, mjData* d, int sensor_id,
+                    MessageType msg_type, const std::string& frame_id,
+                    const std::string& topic_name, mjtNum publish_rate);
 
-protected:
-  //! ROS context
-  std::shared_ptr<RosContext> ros_context_;
+  protected:
+    //! ROS context
+    std::shared_ptr<RosContext> ros_context_;
 
-  //! Sensor ID
-  int sensor_id_ = -1;
+    //! Sensor ID
+    int sensor_id_ = -1;
 
-  //! Type of ROS message
-  MessageType msg_type_;
+    //! Type of ROS message
+    MessageType msg_type_;
 
-  //! Frame ID of message header
-  std::string frame_id_;
+    //! Frame ID of message header
+    std::string frame_id_;
 
-  //! Topic name
-  std::string topic_name_;
+    //! Topic name
+    std::string topic_name_;
 
-  //! ROS publisher
-  rclcpp::PublisherBase::SharedPtr pub_;
+    //! ROS publisher
+    rclcpp::PublisherBase::SharedPtr pub_;
 
-  //! Iteration interval to skip ROS publish
-  int publish_skip_ = 0;
+    //! Iteration interval to skip ROS publish
+    int publish_skip_ = 0;
 
-  //! Iteration count of simulation
-  int sim_cnt_ = 0;
+    //! Iteration count of simulation
+    int iteration_count_ = 0;
 };
 
 } // namespace RosMujoco
