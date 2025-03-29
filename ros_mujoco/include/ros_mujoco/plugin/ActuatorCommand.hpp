@@ -31,7 +31,6 @@ class ActuatorCommand
      */
     static ActuatorCommand* create(const mjModel* m, mjData* d, int plugin_id);
 
-  public:
     /** \brief Copy constructor. */
     ActuatorCommand(ActuatorCommand&&) = default;
 
@@ -63,7 +62,6 @@ class ActuatorCommand
     */
     void callback(const std_msgs::msg::Float64::SharedPtr msg);
 
-  protected:
     //! ROS context
     std::shared_ptr<RosContext> ros_context_;
 

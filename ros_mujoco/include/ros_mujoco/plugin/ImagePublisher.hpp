@@ -32,7 +32,6 @@ class ImagePublisher
      */
     static ImagePublisher* create(const mjModel* m, mjData* d, int plugin_id);
 
-  public:
     /** \brief Copy constructor. */
     ImagePublisher(ImagePublisher&&) = default;
 
@@ -70,7 +69,6 @@ class ImagePublisher
                    std::string depth_topic_name, std::string info_topic_name,
                    int height, int width, mjtNum publish_rate);
 
-  protected:
     //! ROS context
     std::shared_ptr<RosContext> ros_context_;
 

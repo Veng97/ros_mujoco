@@ -29,7 +29,6 @@ class ExternalForce
      */
     static ExternalForce* create(const mjModel* m, mjData* d, int plugin_id);
 
-  public:
     /** \brief Copy constructor. */
     ExternalForce(ExternalForce&&) = default;
 
@@ -72,7 +71,6 @@ class ExternalForce
     */
     void callback(const ros_mujoco_interfaces::msg::ExternalForce::SharedPtr msg);
 
-  protected:
     //! ROS context
     std::shared_ptr<RosContext> ros_context_;
 

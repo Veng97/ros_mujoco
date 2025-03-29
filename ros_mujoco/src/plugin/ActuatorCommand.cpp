@@ -51,16 +51,14 @@ void ActuatorCommand::registerPlugin()
 
     plugin.reset = +[](const mjModel* m, double*, // plugin_state
                        void* plugin_data, int plugin_id) {
-        auto* plugin_instance =
-            reinterpret_cast<class ActuatorCommand*>(plugin_data);
+        auto* plugin_instance = reinterpret_cast<class ActuatorCommand*>(plugin_data);
         plugin_instance->reset(m, plugin_id);
     };
 
     plugin.compute = +[](const mjModel* m, mjData* d, int plugin_id,
                          int // capability_bit
                       ) {
-        auto* plugin_instance =
-            reinterpret_cast<class ActuatorCommand*>(d->plugin_data[plugin_id]);
+        auto* plugin_instance = reinterpret_cast<class ActuatorCommand*>(d->plugin_data[plugin_id]);
         plugin_instance->compute(m, d, plugin_id);
     };
 
@@ -70,9 +68,8 @@ void ActuatorCommand::registerPlugin()
 ActuatorCommand* ActuatorCommand::create(const mjModel* m, mjData* d,
                                          int plugin_id)
 {
-    // actuator_name
-    const char* actuator_name_char =
-        mj_getPluginConfig(m, plugin_id, "actuator_name");
+    // Option: actuator_name
+    const char* actuator_name_char = mj_getPluginConfig(m, plugin_id, "actuator_name");
     if (strlen(actuator_name_char) == 0)
     {
         mju_error("[ActuatorCommand] `actuator_name` is missing.");
@@ -92,15 +89,13 @@ ActuatorCommand* ActuatorCommand::create(const mjModel* m, mjData* d,
         return nullptr;
     }
 
-    // topic_name
+    // Option: topic_name
     const char* topic_name_char = mj_getPluginConfig(m, plugin_id, "topic_name");
     std::string topic_name = "";
     if (strlen(topic_name_char) > 0)
     {
         topic_name = std::string(topic_name_char);
     }
-
-    std::cout << "[ActuatorCommand] Created." << std::endl;
 
     return new ActuatorCommand(m, d, actuator_id, topic_name);
 }
@@ -110,17 +105,17 @@ ActuatorCommand::ActuatorCommand(const mjModel* m,
                                  int actuator_id, std::string topic_name)
     : ros_context_(RosContext::getInstance()), actuator_id_(actuator_id)
 {
-    std::cout << "[ActuatorCommand] Configuring." << std::endl;
-
     if (topic_name.empty())
     {
         std::string actuator_name = std::string(mj_id2name(m, mjOBJ_ACTUATOR, actuator_id));
         topic_name = "mujoco/" + actuator_name;
     }
 
-    sub_ = ros_context_->getNode()->create_subscription<std_msgs::msg::Float64>(
-        topic_name, 1,
-        std::bind(&ActuatorCommand::callback, this, std::placeholders::_1));
+    sub_ = ros_context_->getNode()->create_subscription<std_msgs::msg::Float64>(topic_name, 1, std::bind(&ActuatorCommand::callback, this, std::placeholders::_1));
+
+    std::cout << "[ActuatorCommand] Configured:" << "\n";
+    std::cout << "  - topic_name: " << topic_name << "\n";
+    std::cout << "  - id: " << actuator_id << "\n";
 }
 
 void ActuatorCommand::reset(const mjModel*, // m

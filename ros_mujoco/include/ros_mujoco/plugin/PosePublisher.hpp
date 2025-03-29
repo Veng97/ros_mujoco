@@ -33,7 +33,6 @@ class PosePublisher
      */
     static PosePublisher* create(const mjModel* m, mjData* d, int plugin_id);
 
-  public:
     /** \brief Copy constructor. */
     PosePublisher(PosePublisher&&) = default;
 
@@ -67,7 +66,6 @@ class PosePublisher
                   const std::string& vel_topic_name, mjtNum publish_rate,
                   bool output_tf, const std::string& tf_child_frame_id);
 
-  protected:
     //! ROS context
     std::shared_ptr<RosContext> ros_context_;
 

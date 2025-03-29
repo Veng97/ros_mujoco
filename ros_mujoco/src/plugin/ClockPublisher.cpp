@@ -99,16 +99,16 @@ ClockPublisher* ClockPublisher::create(const mjModel* m, mjData* d, int plugin_i
 ClockPublisher::ClockPublisher(const mjModel* m, mjData*, const std::string& topic_name, const mjtNum& publish_rate)
     : ros_context_(RosContext::getInstance()), topic_name_(topic_name), publish_skip_(std::max(static_cast<int>(1. / (publish_rate * m->opt.timestep)), 1))
 {
-    std::cout << "[ClockPublisher] Configuring:" << "\n";
-    std::cout << "  - topic_name: " << topic_name << "\n";
-    std::cout << "  - publish_rate: " << publish_rate << "\n";
-
     if (topic_name_.empty())
     {
         topic_name_ = "/clock";
     }
 
     pub_ = ros_context_->getNode()->create_publisher<rosgraph_msgs::msg::Clock>(topic_name, 1);
+
+    std::cout << "[ClockPublisher] Configured:" << "\n";
+    std::cout << "  - topic_name: " << topic_name_ << "\n";
+    std::cout << "  - publish_rate: " << publish_rate << " (publishes every " << publish_skip_ << " simulation timestep)\n";
 }
 
 void ClockPublisher::reset(const mjModel*, int)

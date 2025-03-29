@@ -12,10 +12,8 @@ class RosContext
 {
   public:
     /**
-     * \brief Get the instance of RosContext. Must be aquired by any plugin that
-     * needs to publish/subscribe.
-     * \note Once all instances are released/destroyed, the context will be shut
-     * down.
+     * \brief Get the instance of RosContext. Must be aquired by any plugin that needs to publish/subscribe.
+     * \note Once all instances are released/destroyed, the context will be shut down.
      * \return Shared pointer to the instance.
      */
     static std::shared_ptr<RosContext> getInstance();
@@ -42,8 +40,7 @@ class RosContext
     RosContext();
     ~RosContext();
 
-    static std::weak_ptr<RosContext>
-        instance_; // Use weak_ptr to prevent cyclic dependency
+    static std::weak_ptr<RosContext> instance_; // Use weak_ptr to prevent cyclic dependency
 
     std::shared_ptr<rclcpp::Node> node_;
     std::shared_ptr<rclcpp::executors::SingleThreadedExecutor> executor_;
