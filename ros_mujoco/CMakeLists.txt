@@ -13,7 +13,7 @@ endif()
 include(ExternalProject)
 
 # Set MuJoCo version and installation path
-set(MUJOCO_VERSION "3.2.0")
+set(MUJOCO_VERSION "3.2.5")
 set(MUJOCO_URL "https://github.com/google-deepmind/mujoco/releases/download/${MUJOCO_VERSION}/mujoco-${MUJOCO_VERSION}-linux-x86_64.tar.gz")
 set(MUJOCO_INSTALL_DIR "${CMAKE_CURRENT_BINARY_DIR}/mujoco")
 
