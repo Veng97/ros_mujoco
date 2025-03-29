@@ -45,6 +45,7 @@
     <body name="camera" pos="0 1 1" quat="0 0 0.258819 0.965926">
       <joint name="camera_pan" pos="0 0 0" axis="0 1 0" range="-1.5708 1.5708" armature="0.1" damping="0.5"/>
       <joint name="camera_tilt" pos="0 0 0" axis="1 0 0" range="-1.5708 1.5708" armature="0.1" damping="0.5"/>
+      <joint name="camera_roll" pos="0 0 0" axis="0 0 1" range="-1.5708 1.5708" armature="0.1" damping="0.5"/>
       <camera name="camera" pos="0 0 0" fovy="58"/>
       <body name="camera_frame" quat="0 1 0 0"/>
       <body name="camera_marker" pos="0 0 0.05">
@@ -58,6 +59,7 @@
   <actuator>
     <general name="camera_pan" joint="camera_pan" biastype="affine" biasprm="0 -1"/>
     <general name="camera_tilt" joint="camera_tilt" biastype="affine" biasprm="0 -1"/>
+    <general name="camera_roll" joint="camera_roll" biastype="affine" biasprm="0 -1"/>
     <plugin joint="camera_pan" plugin="RosMujoco::ActuatorCommand">
       <config key="actuator_name" value="camera_pan"/>
       <config key="topic_name" value="/camera_pan"/>
