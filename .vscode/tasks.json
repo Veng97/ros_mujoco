@@ -1,0 +1,14 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Build",
+            "type": "shell",
+            "command": "colcon build --symlink-install --cmake-args ' -DCMAKE_EXPORT_COMPILE_COMMANDS=ON' '-DCMAKE_CXX_COMPILER_LAUNCHER=ccache' ' -DCMAKE_BUILD_TYPE=Release' ' -DBUILD_TESTING=ON'",
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }
+        },
+    ]
+}

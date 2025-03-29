@@ -1,0 +1,36 @@
+services:
+  ros-mujoco-dev:
+    container_name: ros-mujoco-dev
+    image: ros-mujoco
+
+    ipc: host
+    network_mode: host
+    privileged: true
+    tty: true
+    
+    working_dir: /repo
+
+    volumes:
+      # Share repository 
+      - ../:/repo:cached
+      # Share X11 access
+      # - ${XAUTHORITY}:${XAUTHORITY}:rw
+      - /tmp/.X11-unix:/tmp/.X11-unix:rw
+
+    environment: 
+      DISPLAY: $DISPLAY
+      # XAUTHORITY: $XAUTHORITY
+  
+
+  # A service for containerization of the VS Code setup. It provides an isolated environment which has the same properties as the main development container,
+  # but with some additional permissions (e.g. SSH access).
+  ros-mujoco-vscode:
+    extends:
+      service: ros-mujoco-dev
+
+    container_name: ros-mujoco-vscode
+    
+    volumes:
+      - ${HOME}/.ssh:/home/ubuntu/.ssh:ro
+
+  

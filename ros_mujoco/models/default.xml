@@ -1,0 +1,113 @@
+<mujoco model="sample_ros_mujoco">
+  <compiler angle="radian"/>
+
+  <option integrator="implicitfast"/>
+
+  <visual>
+    <headlight ambient="0.7 0.7 0.7" diffuse="0.2 0.2 0.2" specular="0.1 0.1 0.1"/>
+    <scale contactwidth="0.02" contactheight="0.5"/>
+    <rgba rangefinder="1 1 0.1 0.1"/>
+  </visual>
+
+  <statistic meansize="0.1" extent="1" center="0 0 1"/>
+
+  <extension>
+    <plugin plugin="RosMujoco::ClockPublisher"/>
+    <plugin plugin="RosMujoco::PosePublisher"/>
+    <plugin plugin="RosMujoco::ImagePublisher"/>
+    <plugin plugin="RosMujoco::ActuatorCommand"/>
+    <plugin plugin="RosMujoco::ExternalForce"/>
+    <plugin plugin="RosMujoco::SensorPublisher"/>
+  </extension>
+  
+  <asset>
+    <texture type="2d" name="floor" builtin="checker" mark="edge" rgb1="0.1 0.2 0.3" rgb2="0.2 0.3 0.4" markrgb="0.2 0.3 0.4" width="300" height="300"/>
+    <material name="floor" texture="floor" texuniform="true" texrepeat="10 10"/>
+  </asset>
+
+  <worldbody>
+    <geom name="floor" size="10 10 0.01" pos="0 0 -0.01" type="plane" material="floor"/>
+    <light pos="1 0 0.3" dir="-0.957826 0 -0.287348"/>
+    <light pos="-1 0 0.3" dir="0.957826 0 -0.287348"/>
+    <plugin plugin="RosMujoco::ClockPublisher">
+      <config key="topic_name" value="/clock"/>
+      <config key="publish_rate" value="100"/>
+      <config key="use_sim_time" value="true"/>
+    </plugin>
+    <body name="object" pos="0 0 1">
+      <joint type="free" limited="false" actuatorfrclimited="false"/>
+      <geom size="0.2 0.2 0.1" type="box" mass="0.1" rgba="0.5 1 0.5 1"/>
+      <site name="object_center" pos="0 0 0"/>
+      <plugin plugin="RosMujoco::ExternalForce">
+        <config key="topic_name" value="/external_force"/>
+        <config key="vis_scale" value="0.1"/>
+      </plugin>
+    </body>
+    <body name="camera" pos="0 1 1" quat="0 0 0.258819 0.965926">
+      <joint name="camera_pan" pos="0 0 0" axis="0 1 0" range="-1.5708 1.5708" armature="0.1" damping="0.5"/>
+      <joint name="camera_tilt" pos="0 0 0" axis="1 0 0" range="-1.5708 1.5708" armature="0.1" damping="0.5"/>
+      <camera name="camera" pos="0 0 0" fovy="58"/>
+      <body name="camera_frame" quat="0 1 0 0"/>
+      <body name="camera_marker" pos="0 0 0.05">
+        <geom size="0.08 0.05 0.03" type="box" mass="1" rgba="0.5 0.5 1 1"/>
+        <geom size="0.01 0.01 0.01" pos="0.04 0.055 0" type="box" mass="0" rgba="0.5 0.5 1 1"/>
+        <geom size="0.03 0.01" pos="0 0 -0.04" type="cylinder" mass="0" rgba="0.5 0.5 1 1"/>
+      </body>
+    </body>
+  </worldbody>
+
+  <actuator>
+    <general name="camera_pan" joint="camera_pan" biastype="affine" biasprm="0 -1"/>
+    <general name="camera_tilt" joint="camera_tilt" biastype="affine" biasprm="0 -1"/>
+    <plugin joint="camera_pan" plugin="RosMujoco::ActuatorCommand">
+      <config key="actuator_name" value="camera_pan"/>
+      <config key="topic_name" value="/camera_pan"/>
+    </plugin>
+  </actuator>
+
+  <sensor>
+    <plugin objtype="xbody" objname="object" plugin="RosMujoco::PosePublisher" name="pose_publisher">
+      <config key="frame_id" value="map"/>
+      <config key="pose_topic_name" value="/pose"/>
+      <config key="vel_topic_name" value="/vel"/>
+      <config key="publish_rate" value="30"/>
+      <config key="output_tf" value="false"/>
+    </plugin>
+    <plugin objtype="xbody" objname="camera_frame" plugin="RosMujoco::PosePublisher" name="tf_publisher">
+      <config key="frame_id" value="map"/>
+      <config key="publish_rate" value="30"/>
+      <config key="output_tf" value="true"/>
+      <config key="tf_child_frame_id" value="camera"/>
+    </plugin>
+    <plugin objtype="camera" objname="camera" plugin="RosMujoco::ImagePublisher" name="image_publisher">
+      <config key="frame_id" value="camera"/>
+      <config key="color_topic_name" value="/image/color"/>
+      <config key="depth_topic_name" value="/image/depth"/>
+      <config key="info_topic_name" value="/image/camera_info"/>
+      <config key="height" value="240"/>
+      <config key="width" value="320"/>
+      <config key="publish_rate" value="30"/>
+    </plugin>
+    <rangefinder site="object_center" name="box_rangefinder"/>
+    <plugin objtype="xbody" objname="object" plugin="RosMujoco::SensorPublisher" name="sensor_publisher_scalar">
+      <config key="sensor_name" value="box_rangefinder"/>
+      <config key="frame_id" value="map"/>
+      <config key="topic_name" value="/box_rangefinder"/>
+      <config key="publish_rate" value="30"/>
+    </plugin>
+    <framepos objtype="site" objname="object_center" name="box_framepos"/>
+    <plugin objtype="xbody" objname="object" plugin="RosMujoco::SensorPublisher" name="sensor_publisher_point">
+      <config key="sensor_name" value="box_framepos"/>
+      <config key="frame_id" value="map"/>
+      <config key="topic_name" value="/box_framepos"/>
+      <config key="publish_rate" value="30"/>
+    </plugin>
+    <framequat objtype="site" objname="object_center" name="box_framequat"/>
+    <plugin objtype="xbody" objname="object" plugin="RosMujoco::SensorPublisher" name="sensor_publisher_quat">
+      <config key="sensor_name" value="box_framequat"/>
+      <config key="frame_id" value="map"/>
+      <config key="topic_name" value="/box_framequat"/>
+      <config key="publish_rate" value="30"/>
+    </plugin>
+  </sensor>
+</mujoco>

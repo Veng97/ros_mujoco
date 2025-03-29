@@ -1,0 +1,46 @@
+{
+    // --------------- Code scanning ---------------
+    "C_Cpp.intelliSenseEngine": "disabled", // Disable the default IntelliSense engine, as it is not needed when using clangd
+    "clangd.path": "/usr/bin/clangd",
+    "clangd.arguments": [
+        "-log=verbose",
+        "--clang-tidy",
+        "-j=4" // Limits the number of threads clangd uses while building the index
+    ],
+    // --------------- Code formatting ---------------
+    "editor.formatOnSave": true,
+    "C_Cpp.clang_format_path": "/usr/bin/clang-format",
+    // --------------- File associations ---------------
+    "C_Cpp.autoAddFileAssociations": false,
+    "files.associations": {
+        "*.world": "xml",
+        "*.xacro": "xml",
+        ".clang*": "yaml",
+    },
+    "search.exclude": {
+        "build": true,
+        "install": true,
+        "log": true,
+        ".cache": true,
+    },
+    // --------------- Python ------------------
+    "python.defaultInterpreterPath": "/usr/bin/python3",
+    "[python]": {
+        "editor.formatOnSave": true,
+        "editor.codeActionsOnSave": {
+            "source.fixAll": "explicit",
+            "source.organizeImports": "explicit"
+        },
+        "editor.defaultFormatter": "charliermarsh.ruff",
+    },
+    "ruff.lineLength": 300,
+    "ruff.lint.select": [
+        "C", // Complexity checks (e.g., cyclomatic complexity)
+        "E", // Pycodestyle errors (PEP 8)
+        "F", // Pyflakes (detects undefined variables, unused imports, etc.)
+        "W", // Pycodestyle warnings (PEP 8)
+        "I", // Import sorting (like isort)
+        "B", // Bugbear (security and correctness issues)
+        "S", // Security-related checks
+    ],
+}

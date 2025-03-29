@@ -1,0 +1,117 @@
+FROM ubuntu:24.04
+
+ENV DEBIAN_FRONTEND=noninteractive
+
+RUN apt-get update -y -qq && apt-get install -y -qq --no-install-recommends \
+    git \
+    ssh \
+    cmake \
+    ccache \
+    htop \
+    python3 \
+    python3-pip \
+    python3-argcomplete \
+    bash-completion \
+    build-essential \
+    software-properties-common \
+    curl \ 
+    gnupg \
+    lsb-release \
+    locales \
+    && locale-gen en_US en_US.UTF-8 \
+    && update-locale LC_ALL=en_US.UTF-8 LANG=en_US.UTF-8 \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
+
+ENV LANG=en_US.UTF-8
+ENV LANGUAGE=en_US:en
+ENV LC_ALL=en_US.UTF-8
+
+# Dependencies for building/scanning/formatting (clang, clang-format, clang-tidy, clangd, ...)
+ARG LLVM_VERSION=20
+RUN curl -fsSL https://apt.llvm.org/llvm.sh | bash -s ${LLVM_VERSION} \
+    # Install clang development tools
+    && apt-get install -y -qq --no-install-recommends \
+    clang-tidy-${LLVM_VERSION} \
+    clang-format-${LLVM_VERSION} \
+    clangd-${LLVM_VERSION} \
+    # Create symbolic links for clang tools
+    && for tool in /usr/bin/clang*-${LLVM_VERSION}; do \
+    ln -sf "$tool" "/usr/bin/$(basename $tool | sed 's/-'${LLVM_VERSION}'//')"; \
+    done \
+    && apt-get autoremove -y \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
+
+
+##############################
+# User Configuration 
+# Note: Ubuntu 24 has a pre-configured user named "ubuntu"
+##############################
+RUN apt-get update -y -qq && apt-get install -y -qq --no-install-recommends \
+    sudo \
+    gosu \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/* \
+    && echo "ubuntu ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers \
+    && usermod -aG adm,video,sudo,dialout ubuntu
+
+
+##############################
+# ROS2
+##############################
+ENV ROS_DISTRO=jazzy
+RUN apt-get update -y -qq && apt-get install -y -qq --no-install-recommends \
+    && curl -sSL https://raw.githubusercontent.com/ros/rosdistro/master/ros.key -o /usr/share/keyrings/ros-archive-keyring.gpg \
+    && echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/ros-archive-keyring.gpg] http://packages.ros.org/ros2/ubuntu $(lsb_release -cs) main" | tee /etc/apt/sources.list.d/ros2.list > /dev/null \
+    && apt-get update -y -qq && apt-get install -y -qq --no-install-recommends \
+    ros-dev-tools \
+    ros-${ROS_DISTRO}-ros-base \
+    # Rviz2
+    ros-${ROS_DISTRO}-rviz2 \
+    # PlotJuggler
+    ros-${ROS_DISTRO}-plotjuggler-ros \
+    # Setup/update packages
+    && rosdep init \
+    && gosu ubuntu rosdep update \
+    # Auto-source packages
+    && echo "source /opt/ros/${ROS_DISTRO}/setup.bash" >> /home/ubuntu/.bashrc \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/* 
+
+ENV PYTHONUNBUFFERED=1
+ENV RCUTILS_COLORIZED_OUTPUT=1
+ENV RCUTILS_CONSOLE_OUTPUT_FORMAT="[{severity} {date_time_with_ms}] [{name}]: {message}"
+
+
+##############################
+# MuJoCo
+##############################
+ARG MUJOCO_VERSION=3.2.0
+ENV MUJOCO_DIR=/opt/mujoco/${MUJOCO_VERSION}
+RUN curl -sSLfO https://github.com/google-deepmind/mujoco/releases/download/${MUJOCO_VERSION}/mujoco-${MUJOCO_VERSION}-linux-x86_64.tar.gz \
+    && mkdir -p ${MUJOCO_DIR} \
+    && tar -xzf mujoco-${MUJOCO_VERSION}-linux-x86_64.tar.gz -C ${MUJOCO_DIR} --strip-components 1 \
+    && rm mujoco-${MUJOCO_VERSION}-linux-x86_64.tar.gz \
+    && chmod -R 777 ${MUJOCO_DIR}/bin
+
+ENV PATH=${MUJOCO_DIR}/bin:${PATH} \
+    LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:${MUJOCO_DIR}/lib \
+    LIBRARY_PATH=${LIBRARY_PATH}:${MUJOCO_DIR}/lib
+
+
+##############################
+# Workspace Dependencies
+# Note: It install everything for the user "ubuntu"
+##############################
+COPY ros_mujoco /tmp/workspace
+RUN apt-get update -y -qq \
+    && gosu ubuntu rosdep install --from-paths /tmp/workspace --ignore-src -r -y \
+    # Cleanup src directory (it should be mounted at runtime)
+    && rm -rf /tmp/workspace \
+    # Auto-source the workspace if it exists in the directory
+    && echo "if [ -f install/setup.bash ]; then echo -e 'Found workspace install directory ('\$(pwd)/install/setup.bash')\nSourcing packages with: source install/setup.bash'; source install/setup.bash; fi" >> /home/ubuntu/.bashrc \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
+
+USER ubuntu
