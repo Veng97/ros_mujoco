@@ -184,7 +184,7 @@ SensorPublisher::SensorPublisher(const mjModel* m,
     {
         pub_ =
             ros_context_->getNode()
-                ->create_publisher<ros_mujoco::msg::ScalarStamped>(topic_name_, 1);
+                ->create_publisher<ros_mujoco_interfaces::msg::ScalarStamped>(topic_name_, 1);
     }
     else if (msg_type_ == MessageType::Point)
     {
@@ -232,11 +232,11 @@ void SensorPublisher::compute(const mjModel* m, mjData* d, int // plugin_id
     int sensor_adr = m->sensor_adr[sensor_id_];
     if (msg_type_ == MessageType::Scalar)
     {
-        ros_mujoco::msg::ScalarStamped msg;
+        ros_mujoco_interfaces::msg::ScalarStamped msg;
         msg.header = header;
         msg.value.data = d->sensordata[sensor_adr];
         std::dynamic_pointer_cast<
-            rclcpp::Publisher<ros_mujoco::msg::ScalarStamped>>(pub_)
+            rclcpp::Publisher<ros_mujoco_interfaces::msg::ScalarStamped>>(pub_)
             ->publish(msg);
     }
     else if (msg_type_ == MessageType::Point)

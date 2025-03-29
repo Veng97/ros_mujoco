@@ -126,7 +126,7 @@ ExternalForce::ExternalForce(const mjModel*, // m
 
     sub_ =
         ros_context_->getNode()
-            ->create_subscription<ros_mujoco::msg::ExternalForce>(
+            ->create_subscription<ros_mujoco_interfaces::msg::ExternalForce>(
                 topic_name, 1,
                 std::bind(&ExternalForce::callback, this, std::placeholders::_1));
 }
@@ -239,7 +239,7 @@ void ExternalForce::visualize(const mjModel*, // m
 }
 
 void ExternalForce::callback(
-    const ros_mujoco::msg::ExternalForce::SharedPtr msg)
+    const ros_mujoco_interfaces::msg::ExternalForce::SharedPtr msg)
 {
 
     if (end_time_ > 0)
@@ -248,7 +248,7 @@ void ExternalForce::callback(
                     "previous message. Ignore the new message.");
         return;
     }
-    msg_ = std::make_shared<ros_mujoco::msg::ExternalForce>(*msg);
+    msg_ = std::make_shared<ros_mujoco_interfaces::msg::ExternalForce>(*msg);
 }
 
 } // namespace RosMujoco

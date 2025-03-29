@@ -12,8 +12,8 @@ namespace RosMujoco
 
 mjPLUGIN_LIB_INIT
 {
-    ActuatorCommand::registerPlugin();
     ClockPublisher::registerPlugin();
+    ActuatorCommand::registerPlugin();
     ExternalForce::registerPlugin();
     ImagePublisher::registerPlugin();
     PosePublisher::registerPlugin();

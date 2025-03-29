@@ -20,7 +20,7 @@ def generate_launch_description():
                 description="Path to the XML model file for MuJoCo simulation",
             ),
             ExecuteProcess(
-                cmd=[os.path.join(mujoco_dir, "bin", "simulate"), LaunchConfiguration("model")],
+                cmd=[os.path.join(get_package_share_directory("ros_mujoco"), "mujoco", "simulate"), LaunchConfiguration("model")],
                 output="screen",
                 name="mujoco",
             ),

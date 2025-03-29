@@ -1,9 +1,9 @@
 #pragma once
 
 #include "RosContext.h"
-#include <rclcpp/subscription.hpp>
 
-#include <ros_mujoco/msg/external_force.hpp>
+#include <rclcpp/subscription.hpp>
+#include <ros_mujoco_interfaces/msg/external_force.hpp>
 
 #include <mujoco/mjdata.h>
 #include <mujoco/mjmodel.h>
@@ -70,14 +70,14 @@ class ExternalForce
     /** \brief Constructor.
         \param msg external force message
     */
-    void callback(const ros_mujoco::msg::ExternalForce::SharedPtr msg);
+    void callback(const ros_mujoco_interfaces::msg::ExternalForce::SharedPtr msg);
 
   protected:
     //! ROS context
     std::shared_ptr<RosContext> ros_context_;
 
     //! ROS subscriber for external force
-    rclcpp::Subscription<ros_mujoco::msg::ExternalForce>::SharedPtr sub_;
+    rclcpp::Subscription<ros_mujoco_interfaces::msg::ExternalForce>::SharedPtr sub_;
 
     //! Body ID
     int body_id_ = -1;
@@ -86,7 +86,7 @@ class ExternalForce
     std::string topic_name_;
 
     //! External force message
-    std::shared_ptr<ros_mujoco::msg::ExternalForce> msg_;
+    std::shared_ptr<ros_mujoco_interfaces::msg::ExternalForce> msg_;
 
     //! End time to apply external force (-1 if no external force is applied)
     mjtNum end_time_ = -1;

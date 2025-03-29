@@ -83,22 +83,6 @@ ENV RCUTILS_CONSOLE_OUTPUT_FORMAT="[{severity} {date_time_with_ms}] [{name}]: {m
 
 
 ##############################
-# MuJoCo
-##############################
-ARG MUJOCO_VERSION=3.2.0
-ENV MUJOCO_DIR=/opt/mujoco/${MUJOCO_VERSION}
-RUN curl -sSLfO https://github.com/google-deepmind/mujoco/releases/download/${MUJOCO_VERSION}/mujoco-${MUJOCO_VERSION}-linux-x86_64.tar.gz \
-    && mkdir -p ${MUJOCO_DIR} \
-    && tar -xzf mujoco-${MUJOCO_VERSION}-linux-x86_64.tar.gz -C ${MUJOCO_DIR} --strip-components 1 \
-    && rm mujoco-${MUJOCO_VERSION}-linux-x86_64.tar.gz \
-    && chmod -R 777 ${MUJOCO_DIR}/bin
-
-ENV PATH=${MUJOCO_DIR}/bin:${PATH} \
-    LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:${MUJOCO_DIR}/lib \
-    LIBRARY_PATH=${LIBRARY_PATH}:${MUJOCO_DIR}/lib
-
-
-##############################
 # Workspace Dependencies
 # Note: It install everything for the user "ubuntu"
 ##############################

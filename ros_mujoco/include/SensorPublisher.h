@@ -1,17 +1,18 @@
 #pragma once
 
 #include "RosContext.h"
+
 #include <geometry_msgs/msg/point_stamped.hpp>
 #include <geometry_msgs/msg/quaternion_stamped.hpp>
 #include <geometry_msgs/msg/vector3_stamped.hpp>
 #include <rclcpp/publisher.hpp>
+#include <ros_mujoco_interfaces/msg/scalar_stamped.hpp>
 
 #include <mujoco/mjdata.h>
 #include <mujoco/mjmodel.h>
 #include <mujoco/mjtnum.h>
 #include <mujoco/mjvisualize.h>
 
-#include <ros_mujoco/msg/scalar_stamped.hpp>
 #include <string>
 
 namespace RosMujoco
