@@ -4,10 +4,17 @@
         {
             "label": "Build",
             "type": "shell",
-            "command": "colcon build --symlink-install --cmake-args ' -DCMAKE_EXPORT_COMPILE_COMMANDS=ON' '-DCMAKE_CXX_COMPILER_LAUNCHER=ccache' ' -DCMAKE_BUILD_TYPE=Release' ' -DBUILD_TESTING=ON'",
+            "command": "colcon build --symlink-install --cmake-args ' -DCMAKE_EXPORT_COMPILE_COMMANDS=ON' ' -DCMAKE_BUILD_TYPE=Release' ' -DBUILD_TESTING=ON'",
             "group": {
                 "kind": "build",
-                "isDefault": true
+            }
+        },
+        {
+            "label": "Clean",
+            "type": "shell",
+            "command": "rm -rf build/ install/ log/",
+            "group": {
+                "kind": "build",
             }
         },
     ]

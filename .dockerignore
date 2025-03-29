@@ -1,4 +1,5 @@
-build/
-log/
-install/
-.cache/
+# Ignore everything
+*
+
+# Exclude folders related to the build
+!ros_mujoco/

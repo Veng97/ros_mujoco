@@ -102,7 +102,7 @@ ENV PATH=${MUJOCO_DIR}/bin:${PATH} \
 # Workspace Dependencies
 # Note: It install everything for the user "ubuntu"
 ##############################
-COPY ../ros_mujoco /tmp/workspace
+COPY . /tmp/workspace
 RUN apt-get update -y -qq \
     && gosu ubuntu rosdep install --from-paths /tmp/workspace --ignore-src -r -y \
     # Cleanup src directory (it should be mounted at runtime)
