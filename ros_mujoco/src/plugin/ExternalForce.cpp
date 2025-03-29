@@ -68,8 +68,7 @@ void ExternalForce::registerPlugin()
     mjp_registerPlugin(&plugin);
 }
 
-ExternalForce* ExternalForce::create(const mjModel* m, mjData* d,
-                                     int plugin_id)
+ExternalForce* ExternalForce::create(const mjModel* m, mjData* d, int plugin_id)
 {
     // Option: topic_name
     const char* topic_name_char = mj_getPluginConfig(m, plugin_id, "topic_name");
@@ -105,13 +104,18 @@ ExternalForce* ExternalForce::create(const mjModel* m, mjData* d,
     return new ExternalForce(m, d, body_id, topic_name, vis_scale);
 }
 
-ExternalForce::ExternalForce(const mjModel*, // m
-                             mjData*,        // d
-                             int body_id, const std::string& topic_name,
+ExternalForce::ExternalForce(const mjModel* m,
+                             mjData*, // d
+                             int body_id,
+                             const std::string& topic_name,
                              mjtNum vis_scale)
-    : ros_context_(RosContext::getInstance()), body_id_(body_id),
-      topic_name_(topic_name), vis_scale_(vis_scale)
+    : ros_context_(RosContext::getInstance()),
+      body_id_(body_id),
+      topic_name_(topic_name),
+      vis_scale_(vis_scale)
 {
+    std::string body_name = std::string(mj_id2name(m, mjOBJ_XBODY, body_id_));
+
     if (topic_name_.empty())
     {
         topic_name_ = "/external_force";
@@ -119,15 +123,17 @@ ExternalForce::ExternalForce(const mjModel*, // m
 
     sub_ = ros_context_->getNode()->create_subscription<ros_mujoco_interfaces::msg::ExternalForce>(topic_name, 1, std::bind(&ExternalForce::callback, this, std::placeholders::_1));
 
-    std::cout << "[ExternalForce] Configured:" << "\n";
+    std::cout << "[ExternalForce] Configured (" << body_name << "):\n";
     std::cout << "  - topic_name: " << topic_name_ << "\n";
     std::cout << "  - vis_scale: " << vis_scale_ << "\n";
+    std::cout << std::flush;
 }
 
 void ExternalForce::reset(const mjModel*, // m
                           int             // plugin_id
 )
 {
+    end_time_ = -1;
     msg_ = nullptr;
 }
 
@@ -230,14 +236,13 @@ void ExternalForce::visualize(const mjModel*, // m
 #endif
 }
 
-void ExternalForce::callback(const ros_mujoco_interfaces::msg::ExternalForce::SharedPtr msg)
+void ExternalForce::callback(ros_mujoco_interfaces::msg::ExternalForce::SharedPtr msg)
 {
-
     if (end_time_ > 0)
     {
         mju_warning("[ExternalForce] New force command received while the previous force was still being applied.");
     }
-    msg_ = std::make_shared<ros_mujoco_interfaces::msg::ExternalForce>(*msg);
+    msg_ = std::move(msg);
 }
 
 } // namespace RosMujoco

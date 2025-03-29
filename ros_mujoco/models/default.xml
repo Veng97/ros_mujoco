@@ -32,9 +32,8 @@
     <plugin plugin="RosMujoco::ClockPublisher">
       <config key="topic_name" value="/clock"/>
       <config key="publish_rate" value="100"/>
-      <config key="use_sim_time" value="true"/>
     </plugin>
-    <body name="object" pos="0 0 1">
+    <body name="movable_box" pos="0 0 1">
       <joint type="free" limited="false" actuatorfrclimited="false"/>
       <geom size="0.2 0.2 0.1" type="box" mass="0.1" rgba="0.5 1 0.5 1"/>
       <site name="object_center" pos="0 0 0"/>
@@ -66,7 +65,7 @@
   </actuator>
 
   <sensor>
-    <plugin objtype="xbody" objname="object" plugin="RosMujoco::PosePublisher" name="pose_publisher">
+    <plugin objtype="xbody" objname="movable_box" plugin="RosMujoco::PosePublisher" name="pose_publisher">
       <config key="frame_id" value="map"/>
       <config key="pose_topic_name" value="/pose"/>
       <config key="vel_topic_name" value="/vel"/>
@@ -89,21 +88,21 @@
       <config key="publish_rate" value="30"/>
     </plugin>
     <rangefinder site="object_center" name="box_rangefinder"/>
-    <plugin objtype="xbody" objname="object" plugin="RosMujoco::SensorPublisher" name="sensor_publisher_scalar">
+    <plugin objtype="xbody" objname="movable_box" plugin="RosMujoco::SensorPublisher" name="sensor_publisher_scalar">
       <config key="sensor_name" value="box_rangefinder"/>
       <config key="frame_id" value="map"/>
       <config key="topic_name" value="/box_rangefinder"/>
       <config key="publish_rate" value="30"/>
     </plugin>
     <framepos objtype="site" objname="object_center" name="box_framepos"/>
-    <plugin objtype="xbody" objname="object" plugin="RosMujoco::SensorPublisher" name="sensor_publisher_point">
+    <plugin objtype="xbody" objname="movable_box" plugin="RosMujoco::SensorPublisher" name="sensor_publisher_point">
       <config key="sensor_name" value="box_framepos"/>
       <config key="frame_id" value="map"/>
       <config key="topic_name" value="/box_framepos"/>
       <config key="publish_rate" value="30"/>
     </plugin>
     <framequat objtype="site" objname="object_center" name="box_framequat"/>
-    <plugin objtype="xbody" objname="object" plugin="RosMujoco::SensorPublisher" name="sensor_publisher_quat">
+    <plugin objtype="xbody" objname="movable_box" plugin="RosMujoco::SensorPublisher" name="sensor_publisher_quat">
       <config key="sensor_name" value="box_framequat"/>
       <config key="frame_id" value="map"/>
       <config key="topic_name" value="/box_framequat"/>

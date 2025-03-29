@@ -96,8 +96,13 @@ ClockPublisher* ClockPublisher::create(const mjModel* m, mjData* d, int plugin_i
     return new ClockPublisher(m, d, topic_name, publish_rate);
 }
 
-ClockPublisher::ClockPublisher(const mjModel* m, mjData*, const std::string& topic_name, const mjtNum& publish_rate)
-    : ros_context_(RosContext::getInstance()), topic_name_(topic_name), publish_skip_(std::max(static_cast<int>(1. / (publish_rate * m->opt.timestep)), 1))
+ClockPublisher::ClockPublisher(const mjModel* m,
+                               mjData*, // d
+                               const std::string& topic_name,
+                               const mjtNum& publish_rate)
+    : ros_context_(RosContext::getInstance()),
+      topic_name_(topic_name),
+      publish_skip_(std::max(static_cast<int>(1. / (publish_rate * m->opt.timestep)), 1))
 {
     if (topic_name_.empty())
     {
@@ -108,7 +113,8 @@ ClockPublisher::ClockPublisher(const mjModel* m, mjData*, const std::string& top
 
     std::cout << "[ClockPublisher] Configured:" << "\n";
     std::cout << "  - topic_name: " << topic_name_ << "\n";
-    std::cout << "  - publish_rate: " << publish_rate << " (publishes every " << publish_skip_ << " simulation timestep)\n";
+    std::cout << "  - publish_rate: " << publish_rate << " (adjusted rate " << 1. / (publish_skip_ * m->opt.timestep) << ")\n";
+    std::cout << std::flush;
 }
 
 void ClockPublisher::reset(const mjModel*, int)
@@ -116,7 +122,10 @@ void ClockPublisher::reset(const mjModel*, int)
     iteration_count_ = 0;
 }
 
-void ClockPublisher::compute(const mjModel*, mjData* d, int)
+void ClockPublisher::compute(const mjModel*, // m
+                             mjData* d,
+                             int // plugin_id
+)
 {
     ++iteration_count_;
     if (iteration_count_ % publish_skip_ != 0)

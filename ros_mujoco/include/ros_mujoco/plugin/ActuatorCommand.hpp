@@ -2,8 +2,6 @@
 
 #include "ros_mujoco/plugin/RosContext.hpp"
 #include <rclcpp/subscription.hpp>
-
-#include <rclcpp/rclcpp.hpp>
 #include <std_msgs/msg/float64.hpp>
 
 #include <mujoco/mjdata.h>
@@ -60,7 +58,7 @@ class ActuatorCommand
     /** \brief Constructor.
         \param msg command message
     */
-    void callback(const std_msgs::msg::Float64::SharedPtr msg);
+    void callback(const std_msgs::msg::Float64& msg);
 
     //! ROS context
     std::shared_ptr<RosContext> ros_context_;

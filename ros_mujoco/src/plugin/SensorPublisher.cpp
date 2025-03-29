@@ -50,28 +50,24 @@ void SensorPublisher::registerPlugin()
 
     plugin.reset = +[](const mjModel* m, double*, // plugin_state
                        void* plugin_data, int plugin_id) {
-        auto* plugin_instance =
-            reinterpret_cast<class SensorPublisher*>(plugin_data);
+        auto* plugin_instance = reinterpret_cast<class SensorPublisher*>(plugin_data);
         plugin_instance->reset(m, plugin_id);
     };
 
     plugin.compute = +[](const mjModel* m, mjData* d, int plugin_id,
                          int // capability_bit
                       ) {
-        auto* plugin_instance =
-            reinterpret_cast<class SensorPublisher*>(d->plugin_data[plugin_id]);
+        auto* plugin_instance = reinterpret_cast<class SensorPublisher*>(d->plugin_data[plugin_id]);
         plugin_instance->compute(m, d, plugin_id);
     };
 
     mjp_registerPlugin(&plugin);
 }
 
-SensorPublisher* SensorPublisher::create(const mjModel* m, mjData* d,
-                                         int plugin_id)
+SensorPublisher* SensorPublisher::create(const mjModel* m, mjData* d, int plugin_id)
 {
-    // sensor_name
-    const char* sensor_name_char =
-        mj_getPluginConfig(m, plugin_id, "sensor_name");
+    // Option: sensor_name
+    const char* sensor_name_char = mj_getPluginConfig(m, plugin_id, "sensor_name");
     if (strlen(sensor_name_char) == 0)
     {
         mju_error("[SensorPublisher] `sensor_name` is missing.");
@@ -91,7 +87,7 @@ SensorPublisher* SensorPublisher::create(const mjModel* m, mjData* d,
         return nullptr;
     }
 
-    // msg_type
+    // Option: msg_type
     MessageType msg_type;
     int sensor_dim = m->sensor_dim[sensor_id];
     if (sensor_dim == 1)
@@ -115,12 +111,11 @@ SensorPublisher* SensorPublisher::create(const mjModel* m, mjData* d,
     }
     else
     {
-        mju_error("[SensorPublisher] Unsupported sensor data dimensions: %d.",
-                  sensor_dim);
+        mju_error("[SensorPublisher] Unsupported sensor data dimensions: %d.", sensor_dim);
         return nullptr;
     }
 
-    // frame_id
+    // Option: frame_id
     const char* frame_id_char = mj_getPluginConfig(m, plugin_id, "frame_id");
     std::string frame_id = "";
     if (strlen(frame_id_char) > 0)
@@ -128,7 +123,7 @@ SensorPublisher* SensorPublisher::create(const mjModel* m, mjData* d,
         frame_id = std::string(frame_id_char);
     }
 
-    // topic_name
+    // Option: topic_name
     const char* topic_name_char = mj_getPluginConfig(m, plugin_id, "topic_name");
     std::string topic_name = "";
     if (strlen(topic_name_char) > 0)
@@ -136,9 +131,8 @@ SensorPublisher* SensorPublisher::create(const mjModel* m, mjData* d,
         topic_name = std::string(topic_name_char);
     }
 
-    // publish_rate
-    const char* publish_rate_char =
-        mj_getPluginConfig(m, plugin_id, "publish_rate");
+    // Option: publish_rate
+    const char* publish_rate_char = mj_getPluginConfig(m, plugin_id, "publish_rate");
     mjtNum publish_rate = 30.0;
     if (strlen(publish_rate_char) > 0)
     {
@@ -150,10 +144,7 @@ SensorPublisher* SensorPublisher::create(const mjModel* m, mjData* d,
         return nullptr;
     }
 
-    std::cout << "[SensorPublisher] Create." << std::endl;
-
-    return new SensorPublisher(m, d, sensor_id, msg_type, frame_id, topic_name,
-                               publish_rate);
+    return new SensorPublisher(m, d, sensor_id, msg_type, frame_id, topic_name, publish_rate);
 }
 
 SensorPublisher::SensorPublisher(const mjModel* m,
@@ -162,54 +153,59 @@ SensorPublisher::SensorPublisher(const mjModel* m,
                                  const std::string& frame_id,
                                  const std::string& topic_name,
                                  mjtNum publish_rate)
-    : ros_context_(RosContext::getInstance()), sensor_id_(sensor_id),
-      msg_type_(msg_type), frame_id_(frame_id), topic_name_(topic_name),
-      publish_skip_(std::max(
-          static_cast<int>(1.0 / (publish_rate * m->opt.timestep)), 1))
+    : ros_context_(RosContext::getInstance()),
+      sensor_id_(sensor_id),
+      msg_type_(msg_type),
+      frame_id_(frame_id),
+      topic_name_(topic_name),
+      publish_skip_(std::max(static_cast<int>(1.0 / (publish_rate * m->opt.timestep)), 1))
 {
-    std::cout << "[SensorPublisher] Configuring." << std::endl;
-
     if (frame_id_.empty())
     {
         frame_id_ = "map";
     }
+
+    std::string sensor_name = std::string(mj_id2name(m, mjOBJ_SENSOR, sensor_id_));
     if (topic_name_.empty())
     {
-        std::string sensor_name =
-            std::string(mj_id2name(m, mjOBJ_SENSOR, sensor_id_));
         topic_name_ = "mujoco/" + sensor_name;
     }
 
+    std::string msg_type_str;
     if (msg_type_ == MessageType::Scalar)
     {
-        pub_ =
-            ros_context_->getNode()
-                ->create_publisher<ros_mujoco_interfaces::msg::ScalarStamped>(topic_name_, 1);
+        msg_type_str = "Scalar";
+        pub_ = ros_context_->getNode()->create_publisher<ros_mujoco_interfaces::msg::ScalarStamped>(topic_name_, 1);
     }
     else if (msg_type_ == MessageType::Point)
     {
-        pub_ = ros_context_->getNode()
-                   ->create_publisher<geometry_msgs::msg::PointStamped>(topic_name_,
-                                                                        1);
+        msg_type_str = "Point";
+        pub_ = ros_context_->getNode()->create_publisher<geometry_msgs::msg::PointStamped>(topic_name_, 1);
     }
     else if (msg_type_ == MessageType::Vector3)
     {
-        pub_ = ros_context_->getNode()
-                   ->create_publisher<geometry_msgs::msg::Vector3Stamped>(
-                       topic_name_, 1);
+        msg_type_str = "Vector3";
+        pub_ = ros_context_->getNode()->create_publisher<geometry_msgs::msg::Vector3Stamped>(topic_name_, 1);
     }
     else // if(msg_type_ == MsgQuaternion)
     {
-        pub_ = ros_context_->getNode()
-                   ->create_publisher<geometry_msgs::msg::QuaternionStamped>(
-                       topic_name_, 1);
+        msg_type_str = "Quaternion";
+        pub_ = ros_context_->getNode()->create_publisher<geometry_msgs::msg::QuaternionStamped>(topic_name_, 1);
     }
+
+    std::cout << "[SensorPublisher] Configured (" << sensor_name << "):\n";
+    std::cout << "  - frame_id: " << frame_id_ << "\n";
+    std::cout << "  - topic_name: " << topic_name_ << "\n";
+    std::cout << "  - msg_type: " << msg_type_str << "\n";
+    std::cout << "  - publish_rate: " << publish_rate << " (adjusted rate " << 1. / (publish_skip_ * m->opt.timestep) << ")\n";
+    std::cout << std::flush;
 }
 
 void SensorPublisher::reset(const mjModel*, // m
                             int             // plugin_id
 )
 {
+    iteration_count_ = 0;
 }
 
 void SensorPublisher::compute(const mjModel* m, mjData* d, int // plugin_id
@@ -235,9 +231,7 @@ void SensorPublisher::compute(const mjModel* m, mjData* d, int // plugin_id
         ros_mujoco_interfaces::msg::ScalarStamped msg;
         msg.header = header;
         msg.value.data = d->sensordata[sensor_adr];
-        std::dynamic_pointer_cast<
-            rclcpp::Publisher<ros_mujoco_interfaces::msg::ScalarStamped>>(pub_)
-            ->publish(msg);
+        std::dynamic_pointer_cast<rclcpp::Publisher<ros_mujoco_interfaces::msg::ScalarStamped>>(pub_)->publish(msg);
     }
     else if (msg_type_ == MessageType::Point)
     {
@@ -246,9 +240,7 @@ void SensorPublisher::compute(const mjModel* m, mjData* d, int // plugin_id
         msg.point.x = d->sensordata[sensor_adr + 0];
         msg.point.y = d->sensordata[sensor_adr + 1];
         msg.point.z = d->sensordata[sensor_adr + 2];
-        std::dynamic_pointer_cast<
-            rclcpp::Publisher<geometry_msgs::msg::PointStamped>>(pub_)
-            ->publish(msg);
+        std::dynamic_pointer_cast<rclcpp::Publisher<geometry_msgs::msg::PointStamped>>(pub_)->publish(msg);
     }
     else if (msg_type_ == MessageType::Vector3)
     {
@@ -257,9 +249,7 @@ void SensorPublisher::compute(const mjModel* m, mjData* d, int // plugin_id
         msg.vector.x = d->sensordata[sensor_adr + 0];
         msg.vector.y = d->sensordata[sensor_adr + 1];
         msg.vector.z = d->sensordata[sensor_adr + 2];
-        std::dynamic_pointer_cast<
-            rclcpp::Publisher<geometry_msgs::msg::Vector3Stamped>>(pub_)
-            ->publish(msg);
+        std::dynamic_pointer_cast<rclcpp::Publisher<geometry_msgs::msg::Vector3Stamped>>(pub_)->publish(msg);
     }
     else // if(msg_type_ == MsgQuaternion)
     {
@@ -269,9 +259,7 @@ void SensorPublisher::compute(const mjModel* m, mjData* d, int // plugin_id
         msg.quaternion.x = d->sensordata[sensor_adr + 1];
         msg.quaternion.y = d->sensordata[sensor_adr + 2];
         msg.quaternion.z = d->sensordata[sensor_adr + 3];
-        std::dynamic_pointer_cast<
-            rclcpp::Publisher<geometry_msgs::msg::QuaternionStamped>>(pub_)
-            ->publish(msg);
+        std::dynamic_pointer_cast<rclcpp::Publisher<geometry_msgs::msg::QuaternionStamped>>(pub_)->publish(msg);
     }
 }
 

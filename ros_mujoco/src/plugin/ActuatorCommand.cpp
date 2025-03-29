@@ -65,8 +65,7 @@ void ActuatorCommand::registerPlugin()
     mjp_registerPlugin(&plugin);
 }
 
-ActuatorCommand* ActuatorCommand::create(const mjModel* m, mjData* d,
-                                         int plugin_id)
+ActuatorCommand* ActuatorCommand::create(const mjModel* m, mjData* d, int plugin_id)
 {
     // Option: actuator_name
     const char* actuator_name_char = mj_getPluginConfig(m, plugin_id, "actuator_name");
@@ -102,20 +101,23 @@ ActuatorCommand* ActuatorCommand::create(const mjModel* m, mjData* d,
 
 ActuatorCommand::ActuatorCommand(const mjModel* m,
                                  mjData*, // d
-                                 int actuator_id, std::string topic_name)
-    : ros_context_(RosContext::getInstance()), actuator_id_(actuator_id)
+                                 int actuator_id,
+                                 std::string topic_name)
+    : ros_context_(RosContext::getInstance()),
+      actuator_id_(actuator_id)
 {
+    std::string actuator_name = std::string(mj_id2name(m, mjOBJ_ACTUATOR, actuator_id));
+
     if (topic_name.empty())
     {
-        std::string actuator_name = std::string(mj_id2name(m, mjOBJ_ACTUATOR, actuator_id));
         topic_name = "mujoco/" + actuator_name;
     }
 
     sub_ = ros_context_->getNode()->create_subscription<std_msgs::msg::Float64>(topic_name, 1, std::bind(&ActuatorCommand::callback, this, std::placeholders::_1));
 
-    std::cout << "[ActuatorCommand] Configured:" << "\n";
+    std::cout << "[ActuatorCommand] Configured (" << actuator_name << "):\n";
     std::cout << "  - topic_name: " << topic_name << "\n";
-    std::cout << "  - id: " << actuator_id << "\n";
+    std::cout << std::flush;
 }
 
 void ActuatorCommand::reset(const mjModel*, // m
@@ -139,9 +141,9 @@ void ActuatorCommand::compute(const mjModel*, // m
     }
 }
 
-void ActuatorCommand::callback(const std_msgs::msg::Float64::SharedPtr msg)
+void ActuatorCommand::callback(const std_msgs::msg::Float64& msg)
 {
-    ctrl_ = msg->data;
+    ctrl_ = msg.data;
 }
 
 } // namespace RosMujoco

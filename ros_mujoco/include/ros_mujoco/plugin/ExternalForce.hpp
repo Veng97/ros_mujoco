@@ -69,7 +69,7 @@ class ExternalForce
     /** \brief Constructor.
         \param msg external force message
     */
-    void callback(const ros_mujoco_interfaces::msg::ExternalForce::SharedPtr msg);
+    void callback(ros_mujoco_interfaces::msg::ExternalForce::SharedPtr msg);
 
     //! ROS context
     std::shared_ptr<RosContext> ros_context_;

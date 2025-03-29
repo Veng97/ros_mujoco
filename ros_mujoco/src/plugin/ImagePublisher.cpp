@@ -45,8 +45,7 @@ void ImagePublisher::registerPlugin()
     };
 
     plugin.destroy = +[](mjData* d, int plugin_id) {
-        auto* plugin_instance =
-            reinterpret_cast<class ImagePublisher*>(d->plugin_data[plugin_id]);
+        auto* plugin_instance = reinterpret_cast<class ImagePublisher*>(d->plugin_data[plugin_id]);
         plugin_instance->free();
         delete reinterpret_cast<ImagePublisher*>(d->plugin_data[plugin_id]);
         d->plugin_data[plugin_id] = 0;
@@ -54,26 +53,23 @@ void ImagePublisher::registerPlugin()
 
     plugin.reset = +[](const mjModel* m, double*, // plugin_state
                        void* plugin_data, int plugin_id) {
-        auto* plugin_instance =
-            reinterpret_cast<class ImagePublisher*>(plugin_data);
+        auto* plugin_instance = reinterpret_cast<class ImagePublisher*>(plugin_data);
         plugin_instance->reset(m, plugin_id);
     };
 
     plugin.compute =
         +[](const mjModel* m, mjData* d, int plugin_id, int // capability_bit
          ) {
-            auto* plugin_instance =
-                reinterpret_cast<class ImagePublisher*>(d->plugin_data[plugin_id]);
+            auto* plugin_instance = reinterpret_cast<class ImagePublisher*>(d->plugin_data[plugin_id]);
             plugin_instance->compute(m, d, plugin_id);
         };
 
     mjp_registerPlugin(&plugin);
 }
 
-ImagePublisher* ImagePublisher::create(const mjModel* m, mjData* d,
-                                       int plugin_id)
+ImagePublisher* ImagePublisher::create(const mjModel* m, mjData* d, int plugin_id)
 {
-    // frame_id
+    // Option: frame_id
     const char* frame_id_char = mj_getPluginConfig(m, plugin_id, "frame_id");
     std::string frame_id = "";
     if (strlen(frame_id_char) > 0)
@@ -81,47 +77,31 @@ ImagePublisher* ImagePublisher::create(const mjModel* m, mjData* d,
         frame_id = std::string(frame_id_char);
     }
 
-    // color_topic_name
-    const char* color_topic_name_char =
-        mj_getPluginConfig(m, plugin_id, "color_topic_name");
+    // Option: color_topic_name
+    const char* color_topic_name_char = mj_getPluginConfig(m, plugin_id, "color_topic_name");
     std::string color_topic_name = "";
     if (strlen(color_topic_name_char) > 0)
     {
         color_topic_name = std::string(color_topic_name_char);
     }
 
-    // depth_topic_name
-    const char* depth_topic_name_char =
-        mj_getPluginConfig(m, plugin_id, "depth_topic_name");
+    // Option: depth_topic_name
+    const char* depth_topic_name_char = mj_getPluginConfig(m, plugin_id, "depth_topic_name");
     std::string depth_topic_name = "";
     if (strlen(depth_topic_name_char) > 0)
     {
         depth_topic_name = std::string(depth_topic_name_char);
     }
 
-    // info_topic_name
-    const char* info_topic_name_char =
-        mj_getPluginConfig(m, plugin_id, "info_topic_name");
+    // Option: info_topic_name
+    const char* info_topic_name_char = mj_getPluginConfig(m, plugin_id, "info_topic_name");
     std::string info_topic_name = "";
     if (strlen(info_topic_name_char) > 0)
     {
         info_topic_name = std::string(info_topic_name_char);
     }
 
-    // height
-    const char* height_char = mj_getPluginConfig(m, plugin_id, "height");
-    int height = 240;
-    if (strlen(height_char) > 0)
-    {
-        height = static_cast<int>(strtol(height_char, nullptr, 10));
-    }
-    if (height <= 0)
-    {
-        mju_error("[ImagePublisher] `height` must be positive.");
-        return nullptr;
-    }
-
-    // width
+    // Option: width
     const char* width_char = mj_getPluginConfig(m, plugin_id, "width");
     int width = 320;
     if (strlen(width_char) > 0)
@@ -134,9 +114,21 @@ ImagePublisher* ImagePublisher::create(const mjModel* m, mjData* d,
         return nullptr;
     }
 
-    // publish_rate
-    const char* publish_rate_char =
-        mj_getPluginConfig(m, plugin_id, "publish_rate");
+    // Option: height
+    const char* height_char = mj_getPluginConfig(m, plugin_id, "height");
+    int height = 240;
+    if (strlen(height_char) > 0)
+    {
+        height = static_cast<int>(strtol(height_char, nullptr, 10));
+    }
+    if (height <= 0)
+    {
+        mju_error("[ImagePublisher] `height` must be positive.");
+        return nullptr;
+    }
+
+    // Option: publish_rate
+    const char* publish_rate_char = mj_getPluginConfig(m, plugin_id, "publish_rate");
     mjtNum publish_rate = 30.0;
     if (strlen(publish_rate_char) > 0)
     {
@@ -152,8 +144,7 @@ ImagePublisher* ImagePublisher::create(const mjModel* m, mjData* d,
     int sensor_id = 0;
     for (; sensor_id < m->nsensor; sensor_id++)
     {
-        if (m->sensor_type[sensor_id] == mjSENS_PLUGIN &&
-            m->sensor_plugin[sensor_id] == plugin_id)
+        if (m->sensor_type[sensor_id] == mjSENS_PLUGIN && m->sensor_plugin[sensor_id] == plugin_id)
         {
             break;
         }
@@ -169,30 +160,29 @@ ImagePublisher* ImagePublisher::create(const mjModel* m, mjData* d,
         return nullptr;
     }
 
-    std::cout << "[ImagePublisher] Create." << std::endl;
-
-    return new ImagePublisher(m, d, sensor_id, frame_id, color_topic_name,
-                              depth_topic_name, info_topic_name, height, width,
-                              publish_rate);
+    return new ImagePublisher(m, d, sensor_id, frame_id, color_topic_name, depth_topic_name, info_topic_name, height, width, publish_rate);
 }
 
 ImagePublisher::ImagePublisher(const mjModel* m,
                                mjData*, // d
-                               int sensor_id, const std::string& frame_id,
+                               int sensor_id,
+                               const std::string& frame_id,
                                std::string color_topic_name,
                                std::string depth_topic_name,
-                               std::string info_topic_name, int height,
-                               int width, mjtNum publish_rate)
-    : ros_context_(RosContext::getInstance()), sensor_id_(sensor_id),
-      camera_id_(m->sensor_objid[sensor_id]), frame_id_(frame_id),
-      publish_skip_(std::max(
-          static_cast<int>(1.0 / (publish_rate * m->opt.timestep)), 1)),
+                               std::string info_topic_name,
+                               int height,
+                               int width,
+                               mjtNum publish_rate)
+    : ros_context_(RosContext::getInstance()),
+      sensor_id_(sensor_id),
+      camera_id_(m->sensor_objid[sensor_id]),
+      frame_id_(frame_id),
+      publish_skip_(std::max(static_cast<int>(1.0 / (publish_rate * m->opt.timestep)), 1)),
       viewport_({0, 0, width, height})
 {
-    std::cout << "[ImagePublisher] Configuring." << std::endl;
 
-    std::string camera_name =
-        std::string(mj_id2name(m, mjOBJ_CAMERA, camera_id_));
+    std::string sensor_name = std::string(mj_id2name(m, mjOBJ_SENSOR, sensor_id_));
+    std::string camera_name = std::string(mj_id2name(m, mjOBJ_CAMERA, camera_id_));
     if (frame_id_.empty())
     {
         frame_id_ = camera_name;
@@ -219,15 +209,13 @@ ImagePublisher::ImagePublisher(const mjModel* m,
     // Create invisible window, single-buffered
     glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE);
     glfwWindowHint(GLFW_DOUBLEBUFFER, GLFW_FALSE);
-    window_ = glfwCreateWindow(viewport_.width, viewport_.height,
-                               "RosMujoco::ImagePublisher", nullptr, nullptr);
+    window_ = glfwCreateWindow(viewport_.width, viewport_.height, "RosMujoco::ImagePublisher", nullptr, nullptr);
     if (!window_)
     {
         mju_error("[ImagePublisher] Could not create GLFW window.");
     }
 
     // Make context current
-    // \todo Is it OK to override the current context of OpenGL?
     glfwMakeContextCurrent(window_);
 
     // Init default data for visualization structures
@@ -247,39 +235,43 @@ ImagePublisher::ImagePublisher(const mjModel* m,
     mjr_setBuffer(mjFB_OFFSCREEN, &context_);
     if (context_.currentBuffer != mjFB_OFFSCREEN)
     {
-        mju_error("[ImagePublisher] Offscreen rendering not supported, using "
-                  "default/window framebuffer.");
+        mju_error("[ImagePublisher] Offscreen rendering not supported, using default/window framebuffer.");
     }
 
     // Allocate buffer
-    size_t color_buffer_size =
-        sizeof(unsigned char) * 3 * viewport_.width * viewport_.height;
+    size_t color_buffer_size = sizeof(unsigned char) * 3 * viewport_.width * viewport_.height;
     size_t depth_buffer_size = sizeof(float) * viewport_.width * viewport_.height;
     color_buffer_ = static_cast<unsigned char*>(std::malloc(color_buffer_size));
     depth_buffer_ = static_cast<float*>(std::malloc(depth_buffer_size));
-    color_buffer_flipped_ =
-        static_cast<unsigned char*>(std::malloc(color_buffer_size));
+    color_buffer_flipped_ = static_cast<unsigned char*>(std::malloc(color_buffer_size));
     depth_buffer_flipped_ = static_cast<float*>(std::malloc(depth_buffer_size));
 
-    // Init ROS
-    color_pub_ =
-        ros_context_->getNode()->create_publisher<sensor_msgs::msg::Image>(
-            color_topic_name, 1);
-    depth_pub_ =
-        ros_context_->getNode()->create_publisher<sensor_msgs::msg::Image>(
-            depth_topic_name, 1);
-    info_pub_ =
-        ros_context_->getNode()->create_publisher<sensor_msgs::msg::CameraInfo>(
-            info_topic_name, 1);
+    // Create interface
+    color_pub_ = ros_context_->getNode()->create_publisher<sensor_msgs::msg::Image>(color_topic_name, 1);
+    depth_pub_ = ros_context_->getNode()->create_publisher<sensor_msgs::msg::Image>(depth_topic_name, 1);
+    info_pub_ = ros_context_->getNode()->create_publisher<sensor_msgs::msg::CameraInfo>(info_topic_name, 1);
+
+    std::cout << "[ImagePublisher] Configured (" << sensor_name << "):\n";
+    std::cout << "  - frame_id: " << frame_id_ << "\n";
+    std::cout << "  - color_topic_name: " << color_topic_name << "\n";
+    std::cout << "  - depth_topic_name: " << depth_topic_name << "\n";
+    std::cout << "  - info_topic_name: " << info_topic_name << "\n";
+    std::cout << "  - width: " << viewport_.width << "\n";
+    std::cout << "  - height: " << viewport_.height << "\n";
+    std::cout << "  - publish_rate: " << publish_rate << " (adjusted rate " << 1. / (publish_skip_ * m->opt.timestep) << ")\n";
+    std::cout << std::flush;
 }
 
 void ImagePublisher::reset(const mjModel*, // m
                            int             // plugin_id
 )
 {
+    iteration_count_ = 0;
 }
 
-void ImagePublisher::compute(const mjModel* m, mjData* d, int // plugin_id
+void ImagePublisher::compute(const mjModel* m,
+                             mjData* d,
+                             int // plugin_id
 )
 {
     ++iteration_count_;
@@ -289,12 +281,10 @@ void ImagePublisher::compute(const mjModel* m, mjData* d, int // plugin_id
     }
 
     // Make context current
-    // \todo Is it OK to override the current context of OpenGL?
     glfwMakeContextCurrent(window_);
 
     // Update abstract scene
-    mjv_updateScene(m, d, &option_, nullptr, &camera_,
-                    mjCAT_STATIC | mjCAT_DYNAMIC, &scene_);
+    mjv_updateScene(m, d, &option_, nullptr, &camera_, mjCAT_STATIC | mjCAT_DYNAMIC, &scene_);
 
     // Render scene in offscreen buffer
     mjr_render(viewport_, &scene_, &context_);
@@ -312,10 +302,8 @@ void ImagePublisher::compute(const mjModel* m, mjData* d, int // plugin_id
             int idx = h * viewport_.width + w;
             int idx_flipped = (viewport_.height - 1 - h) * viewport_.width + w;
 
-            // See
-            // https://github.com/deepmind/mujoco/blob/631b16e7ad192df936195658fe79f2ada85f755c/python/mujoco/renderer.py#L175-L178
-            depth_buffer_[idx] =
-                near / (1.0f - depth_buffer_[idx] * (1.0f - near / far));
+            // See: https://github.com/deepmind/mujoco/blob/631b16e7ad192df936195658fe79f2ada85f755c/python/mujoco/renderer.py#L175-L178
+            depth_buffer_[idx] = near / (1.F - depth_buffer_[idx] * (1.F - near / far));
 
             for (int c = 0; c < 3; c++)
             {
@@ -337,12 +325,9 @@ void ImagePublisher::compute(const mjModel* m, mjData* d, int // plugin_id
     color_msg.width = viewport_.width;
     color_msg.encoding = "rgb8";
     color_msg.is_bigendian = 0;
-    color_msg.step =
-        static_cast<unsigned int>(sizeof(unsigned char) * 3 * viewport_.width);
-    color_msg.data.resize(sizeof(unsigned char) * 3 * viewport_.width *
-                          viewport_.height);
-    std::memcpy(&color_msg.data[0], color_buffer_flipped_,
-                sizeof(unsigned char) * 3 * viewport_.width * viewport_.height);
+    color_msg.step = static_cast<unsigned int>(sizeof(unsigned char) * 3 * viewport_.width);
+    color_msg.data.resize(sizeof(unsigned char) * 3 * viewport_.width * viewport_.height);
+    std::memcpy(&color_msg.data[0], color_buffer_flipped_, sizeof(unsigned char) * 3 * viewport_.width * viewport_.height);
     color_pub_->publish(color_msg);
 
     sensor_msgs::msg::Image depth_msg;
@@ -354,8 +339,7 @@ void ImagePublisher::compute(const mjModel* m, mjData* d, int // plugin_id
     depth_msg.is_bigendian = 0;
     depth_msg.step = static_cast<unsigned int>(sizeof(float) * viewport_.width);
     depth_msg.data.resize(sizeof(float) * viewport_.width * viewport_.height);
-    std::memcpy(&depth_msg.data[0], depth_buffer_flipped_,
-                sizeof(float) * viewport_.width * viewport_.height);
+    std::memcpy(&depth_msg.data[0], depth_buffer_flipped_, sizeof(float) * viewport_.width * viewport_.height);
     depth_pub_->publish(depth_msg);
 
     sensor_msgs::msg::CameraInfo info_msg;
@@ -368,9 +352,7 @@ void ImagePublisher::compute(const mjModel* m, mjData* d, int // plugin_id
     info_msg.k.fill(0.0);
     info_msg.r.fill(0.0);
     info_msg.p.fill(0.0);
-    double focal_scaling =
-        (1.0 / std::tan((m->cam_fovy[camera_id_] * M_PI / 180.0) / 2.0)) *
-        viewport_.height / 2.0;
+    double focal_scaling = (1.0 / std::tan((m->cam_fovy[camera_id_] * M_PI / 180.0) / 2.0)) * viewport_.height / 2.0;
     info_msg.k[0] = info_msg.p[0] = focal_scaling;
     info_msg.k[2] = info_msg.p[2] = static_cast<double>(viewport_.width) / 2.0;
     info_msg.k[4] = info_msg.p[5] = focal_scaling;
