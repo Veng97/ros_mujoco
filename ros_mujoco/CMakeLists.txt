@@ -95,4 +95,14 @@ install(
   DESTINATION share/${PROJECT_NAME}
 )
 
+# Add test
+if(BUILD_TESTING)
+  find_package(ament_cmake_pytest REQUIRED)
+
+  ament_add_pytest_test(test_mujoco_launch "test/test_mujoco_launch.py"
+    PYTHON_EXECUTABLE "${_PYTHON_EXECUTABLE}"
+    WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/test"
+  )
+endif()
+
 ament_package()
