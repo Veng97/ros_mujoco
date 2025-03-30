@@ -64,7 +64,7 @@ ClockPublisher* ClockPublisher::create(const mjModel* m, mjData* d, int plugin_i
 
     // Option: topic_name
     const char* topic_name_char = mj_getPluginConfig(m, plugin_id, "topic_name");
-    std::string topic_name = "";
+    std::string topic_name;
     if (strlen(topic_name_char) > 0)
     {
         topic_name = std::string(topic_name_char);

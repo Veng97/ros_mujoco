@@ -117,7 +117,7 @@ SensorPublisher* SensorPublisher::create(const mjModel* m, mjData* d, int plugin
 
     // Option: frame_id
     const char* frame_id_char = mj_getPluginConfig(m, plugin_id, "frame_id");
-    std::string frame_id = "";
+    std::string frame_id;
     if (strlen(frame_id_char) > 0)
     {
         frame_id = std::string(frame_id_char);
@@ -125,7 +125,7 @@ SensorPublisher* SensorPublisher::create(const mjModel* m, mjData* d, int plugin
 
     // Option: topic_name
     const char* topic_name_char = mj_getPluginConfig(m, plugin_id, "topic_name");
-    std::string topic_name = "";
+    std::string topic_name;
     if (strlen(topic_name_char) > 0)
     {
         topic_name = std::string(topic_name_char);

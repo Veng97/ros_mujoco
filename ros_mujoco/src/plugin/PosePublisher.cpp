@@ -68,7 +68,7 @@ PosePublisher* PosePublisher::create(const mjModel* m, mjData* d, int plugin_id)
 {
     // Option: frame_id
     const char* frame_id_char = mj_getPluginConfig(m, plugin_id, "frame_id");
-    std::string frame_id = "";
+    std::string frame_id;
     if (strlen(frame_id_char) > 0)
     {
         frame_id = std::string(frame_id_char);
@@ -76,7 +76,7 @@ PosePublisher* PosePublisher::create(const mjModel* m, mjData* d, int plugin_id)
 
     // Option: pose_topic_name
     const char* pose_topic_name_char = mj_getPluginConfig(m, plugin_id, "pose_topic_name");
-    std::string pose_topic_name = "";
+    std::string pose_topic_name;
     if (strlen(pose_topic_name_char) > 0)
     {
         pose_topic_name = std::string(pose_topic_name_char);
@@ -84,7 +84,7 @@ PosePublisher* PosePublisher::create(const mjModel* m, mjData* d, int plugin_id)
 
     // Option: vel_topic_name
     const char* vel_topic_name_char = mj_getPluginConfig(m, plugin_id, "vel_topic_name");
-    std::string vel_topic_name = "";
+    std::string vel_topic_name;
     if (strlen(vel_topic_name_char) > 0)
     {
         vel_topic_name = std::string(vel_topic_name_char);
@@ -118,7 +118,7 @@ PosePublisher* PosePublisher::create(const mjModel* m, mjData* d, int plugin_id)
 
     // Option: tf_child_frame_id
     const char* tf_child_frame_id_char = mj_getPluginConfig(m, plugin_id, "tf_child_frame_id");
-    std::string tf_child_frame_id = "";
+    std::string tf_child_frame_id;
     if (strlen(tf_child_frame_id_char) > 0)
     {
         tf_child_frame_id = std::string(tf_child_frame_id_char);

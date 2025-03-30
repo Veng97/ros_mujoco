@@ -71,7 +71,7 @@ ImagePublisher* ImagePublisher::create(const mjModel* m, mjData* d, int plugin_i
 {
     // Option: frame_id
     const char* frame_id_char = mj_getPluginConfig(m, plugin_id, "frame_id");
-    std::string frame_id = "";
+    std::string frame_id;
     if (strlen(frame_id_char) > 0)
     {
         frame_id = std::string(frame_id_char);
@@ -79,7 +79,7 @@ ImagePublisher* ImagePublisher::create(const mjModel* m, mjData* d, int plugin_i
 
     // Option: color_topic_name
     const char* color_topic_name_char = mj_getPluginConfig(m, plugin_id, "color_topic_name");
-    std::string color_topic_name = "";
+    std::string color_topic_name;
     if (strlen(color_topic_name_char) > 0)
     {
         color_topic_name = std::string(color_topic_name_char);
@@ -87,7 +87,7 @@ ImagePublisher* ImagePublisher::create(const mjModel* m, mjData* d, int plugin_i
 
     // Option: depth_topic_name
     const char* depth_topic_name_char = mj_getPluginConfig(m, plugin_id, "depth_topic_name");
-    std::string depth_topic_name = "";
+    std::string depth_topic_name;
     if (strlen(depth_topic_name_char) > 0)
     {
         depth_topic_name = std::string(depth_topic_name_char);
@@ -95,7 +95,7 @@ ImagePublisher* ImagePublisher::create(const mjModel* m, mjData* d, int plugin_i
 
     // Option: info_topic_name
     const char* info_topic_name_char = mj_getPluginConfig(m, plugin_id, "info_topic_name");
-    std::string info_topic_name = "";
+    std::string info_topic_name;
     if (strlen(info_topic_name_char) > 0)
     {
         info_topic_name = std::string(info_topic_name_char);
@@ -164,9 +164,9 @@ ImagePublisher* ImagePublisher::create(const mjModel* m, mjData* d, int plugin_i
 }
 
 ImagePublisher::ImagePublisher(const mjModel* m,
-                               mjData*, // d
+                               mjData*,
                                int sensor_id,
-                               const std::string& frame_id,
+                               std::string frame_id,
                                std::string color_topic_name,
                                std::string depth_topic_name,
                                std::string info_topic_name,
@@ -176,7 +176,7 @@ ImagePublisher::ImagePublisher(const mjModel* m,
     : ros_context_(RosContext::getInstance()),
       sensor_id_(sensor_id),
       camera_id_(m->sensor_objid[sensor_id]),
-      frame_id_(frame_id),
+      frame_id_(std::move(frame_id)),
       publish_skip_(std::max(static_cast<int>(1.0 / (publish_rate * m->opt.timestep)), 1)),
       viewport_({0, 0, width, height})
 {
@@ -201,7 +201,7 @@ ImagePublisher::ImagePublisher(const mjModel* m,
     }
 
     // Init OpenGL
-    if (!glfwInit())
+    if (glfwInit() == GLFW_FALSE)
     {
         mju_error("[ImagePublisher] Could not initialize GLFW.");
     }
@@ -210,7 +210,7 @@ ImagePublisher::ImagePublisher(const mjModel* m,
     glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE);
     glfwWindowHint(GLFW_DOUBLEBUFFER, GLFW_FALSE);
     window_ = glfwCreateWindow(viewport_.width, viewport_.height, "RosMujoco::ImagePublisher", nullptr, nullptr);
-    if (!window_)
+    if (window_ == nullptr)
     {
         mju_error("[ImagePublisher] Could not create GLFW window.");
     }
