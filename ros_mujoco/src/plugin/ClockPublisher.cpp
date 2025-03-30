@@ -1,8 +1,8 @@
-#include "ros_mujoco/plugin/ClockPublisher.hpp"
-
 #include <iostream>
 
 #include <mujoco/mujoco.h>
+
+#include "ros_mujoco/plugin/ClockPublisher.hpp"
 
 namespace RosMujoco {
 

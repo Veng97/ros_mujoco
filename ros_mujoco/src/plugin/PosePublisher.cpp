@@ -1,8 +1,8 @@
-#include "ros_mujoco/plugin/PosePublisher.hpp"
-
 #include <iostream>
 
 #include <mujoco/mujoco.h>
+
+#include "ros_mujoco/plugin/PosePublisher.hpp"
 
 namespace RosMujoco {
 
@@ -97,7 +97,7 @@ PosePublisher* PosePublisher::create(const mjModel* m, mjData* d, int plugin_id)
   bool output_tf = false;
   if (strlen(output_tf_char) > 0)
   {
-    if (!(strcmp(output_tf_char, "true") == 0 || strcmp(output_tf_char, "false") == 0))
+    if (strcmp(output_tf_char, "true") != 0 && strcmp(output_tf_char, "false") != 0)
     {
       mju_error("[PosePublisher] `output_tf` must be `true` or `false`.");
       return nullptr;

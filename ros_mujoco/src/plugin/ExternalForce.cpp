@@ -1,8 +1,8 @@
-#include "ros_mujoco/plugin/ExternalForce.hpp"
-
 #include <iostream>
 
 #include <mujoco/mujoco.h>
+
+#include "ros_mujoco/plugin/ExternalForce.hpp"
 
 namespace RosMujoco {
 
