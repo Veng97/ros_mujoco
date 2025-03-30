@@ -327,7 +327,7 @@ void ImagePublisher::compute(const mjModel* m,
     color_msg.is_bigendian = 0;
     color_msg.step = static_cast<unsigned int>(sizeof(unsigned char) * 3 * viewport_.width);
     color_msg.data.resize(sizeof(unsigned char) * 3 * viewport_.width * viewport_.height);
-    std::memcpy(&color_msg.data[0], color_buffer_flipped_, sizeof(unsigned char) * 3 * viewport_.width * viewport_.height);
+    std::memcpy(color_msg.data.data(), color_buffer_flipped_, sizeof(unsigned char) * 3 * viewport_.width * viewport_.height);
     color_pub_->publish(color_msg);
 
     sensor_msgs::msg::Image depth_msg;
@@ -339,7 +339,7 @@ void ImagePublisher::compute(const mjModel* m,
     depth_msg.is_bigendian = 0;
     depth_msg.step = static_cast<unsigned int>(sizeof(float) * viewport_.width);
     depth_msg.data.resize(sizeof(float) * viewport_.width * viewport_.height);
-    std::memcpy(&depth_msg.data[0], depth_buffer_flipped_, sizeof(float) * viewport_.width * viewport_.height);
+    std::memcpy(depth_msg.data.data(), depth_buffer_flipped_, sizeof(float) * viewport_.width * viewport_.height);
     depth_pub_->publish(depth_msg);
 
     sensor_msgs::msg::CameraInfo info_msg;
