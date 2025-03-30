@@ -52,8 +52,7 @@ class ExternalForce
         \param scn rendering scene
         \param plugin_id plugin ID
      */
-    void visualize(const mjModel* m, mjData* d, const mjvOption* opt,
-                   mjvScene* scn, int plugin_id);
+    void visualize(const mjModel* m, mjData* d, const mjvOption* opt, mjvScene* scn, int plugin_id);
 
   protected:
     /** \brief Constructor.
@@ -63,8 +62,7 @@ class ExternalForce
         \param topic_name topic name of external force
         \param vis_scale arrow length scale
     */
-    ExternalForce(const mjModel* m, mjData* d, int body_id,
-                  const std::string& topic_name, mjtNum vis_scale);
+    ExternalForce(const mjModel* m, mjData* d, int body_id, const std::string& topic_name, mjtNum vis_scale);
 
     /** \brief Constructor.
         \param msg external force message

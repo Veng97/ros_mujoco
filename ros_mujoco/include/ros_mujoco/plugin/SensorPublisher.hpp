@@ -38,7 +38,6 @@ class SensorPublisher
         Quaternion
     };
 
-  public:
     /** \brief Register plugin. */
     static void registerPlugin();
 
@@ -49,7 +48,6 @@ class SensorPublisher
      */
     static SensorPublisher* create(const mjModel* m, mjData* d, int plugin_id);
 
-  public:
     /** \brief Copy constructor. */
     SensorPublisher(SensorPublisher&&) = default;
 
@@ -80,7 +78,6 @@ class SensorPublisher
                     MessageType msg_type, const std::string& frame_id,
                     const std::string& topic_name, mjtNum publish_rate);
 
-  protected:
     //! ROS context
     std::shared_ptr<RosContext> ros_context_;
 

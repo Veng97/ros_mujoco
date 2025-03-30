@@ -52,10 +52,9 @@ class ActuatorCommand
         \param actuator_id actuator ID
         \param topic_name topic name
     */
-    ActuatorCommand(const mjModel* m, mjData* d, int actuator_id,
-                    std::string topic_name);
+    ActuatorCommand(const mjModel* m, mjData* d, int actuator_id, std::string topic_name);
 
-    /** \brief Constructor.
+    /** \brief Subscription callback for actuator commands.
         \param msg command message
     */
     void callback(const std_msgs::msg::Float64& msg);

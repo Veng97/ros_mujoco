@@ -35,7 +35,7 @@ void PosePublisher::registerPlugin()
 
     plugin.init = +[](const mjModel* m, mjData* d, int plugin_id) {
         auto* plugin_instance = PosePublisher::create(m, d, plugin_id);
-        if (!plugin_instance)
+        if (plugin_instance == nullptr)
         {
             return -1;
         }

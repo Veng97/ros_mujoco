@@ -43,15 +43,17 @@ Diagnostics:
       readability-identifier-naming.VariableCase: lower_case
       readability-identifier-naming.MemberCase: lower_case
       readability-identifier-naming.ClassMemberCase: lower_case
+      readability-identifier-naming.ClassMemberSuffix: _
+      readability-identifier-naming.ClassMemberPrefix: ""
       readability-identifier-naming.PrivateMemberCase: lower_case
-      readability-identifier-naming.PrivateMemberSuffix: ""
-      readability-identifier-naming.PrivateMemberPrefix: m_
-      readability-identifier-naming.ProtectedMemberSuffix: ""
-      readability-identifier-naming.ProtectedMemberPrefix: m_
+      readability-identifier-naming.PrivateMemberSuffix: _
+      readability-identifier-naming.PrivateMemberPrefix: ""
+      readability-identifier-naming.ProtectedMemberSuffix: _
+      readability-identifier-naming.ProtectedMemberPrefix: ""
       readability-identifier-naming.PublicMemberSuffix: ""
       readability-identifier-naming.PublicMemberPrefix: ""
       readability-identifier-naming.EnumPrefix: ""
-      readability-identifier-naming.EnumConstantCase: UPPER_CASE
+      readability-identifier-naming.EnumConstantCase: CamelCase
       readability-identifier-naming.EnumConstantPrefix: ""
       readability-identifier-naming.ConstexprVariableCase: UPPER_CASE
       readability-identifier-naming.ConstexprVariablePrefix: ""

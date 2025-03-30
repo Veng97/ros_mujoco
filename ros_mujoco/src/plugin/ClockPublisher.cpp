@@ -15,25 +15,20 @@ void ClockPublisher::registerPlugin()
     plugin.name = "RosMujoco::ClockPublisher";
     plugin.capabilityflags |= mjPLUGIN_PASSIVE;
 
-    const char* attributes[] = {"topic_name", "publish_rate", "use_sim_time"};
+    const char* attributes[] = {"topic_name", "publish_rate"};
 
     plugin.nattribute = sizeof(attributes) / sizeof(attributes[0]);
     plugin.attributes = attributes;
 
-    plugin.nstate = +[](const mjModel*, // m
-                        int             // plugin_id
-                     ) { return 0; };
+    plugin.nstate = +[](const mjModel*, int) { return 0; };
 
-    plugin.nsensordata = +[](const mjModel*, // m
-                             int,            // plugin_id
-                             int             // sensor_id
-                          ) { return 0; };
+    plugin.nsensordata = +[](const mjModel*, int, int) { return 0; };
 
     plugin.needstage = mjSTAGE_POS;
 
     plugin.init = +[](const mjModel* m, mjData* d, int plugin_id) {
         auto* plugin_instance = ClockPublisher::create(m, d, plugin_id);
-        if (!plugin_instance)
+        if (plugin_instance == nullptr)
         {
             return -1;
         }
@@ -46,20 +41,15 @@ void ClockPublisher::registerPlugin()
         d->plugin_data[plugin_id] = 0;
     };
 
-    plugin.reset = +[](const mjModel* m, double*, // plugin_state
-                       void* plugin_data, int plugin_id) {
-        auto* plugin_instance =
-            reinterpret_cast<class ClockPublisher*>(plugin_data);
+    plugin.reset = +[](const mjModel* m, double*, void* plugin_data, int plugin_id) {
+        auto* plugin_instance = reinterpret_cast<class ClockPublisher*>(plugin_data);
         plugin_instance->reset(m, plugin_id);
     };
 
-    plugin.compute =
-        +[](const mjModel* m, mjData* d, int plugin_id, int // capability_bit
-         ) {
-            auto* plugin_instance =
-                reinterpret_cast<class ClockPublisher*>(d->plugin_data[plugin_id]);
-            plugin_instance->compute(m, d, plugin_id);
-        };
+    plugin.compute = +[](const mjModel* m, mjData* d, int plugin_id, int) {
+        auto* plugin_instance = reinterpret_cast<class ClockPublisher*>(d->plugin_data[plugin_id]);
+        plugin_instance->compute(m, d, plugin_id);
+    };
 
     mjp_registerPlugin(&plugin);
 }
@@ -96,10 +86,7 @@ ClockPublisher* ClockPublisher::create(const mjModel* m, mjData* d, int plugin_i
     return new ClockPublisher(m, d, topic_name, publish_rate);
 }
 
-ClockPublisher::ClockPublisher(const mjModel* m,
-                               mjData*, // d
-                               const std::string& topic_name,
-                               const mjtNum& publish_rate)
+ClockPublisher::ClockPublisher(const mjModel* m, mjData*, const std::string& topic_name, const mjtNum& publish_rate)
     : ros_context_(RosContext::getInstance()),
       topic_name_(topic_name),
       publish_skip_(std::max(static_cast<int>(1. / (publish_rate * m->opt.timestep)), 1))
@@ -122,10 +109,7 @@ void ClockPublisher::reset(const mjModel*, int)
     iteration_count_ = 0;
 }
 
-void ClockPublisher::compute(const mjModel*, // m
-                             mjData* d,
-                             int // plugin_id
-)
+void ClockPublisher::compute(const mjModel*, mjData* d, int)
 {
     ++iteration_count_;
     if (iteration_count_ % publish_skip_ != 0)

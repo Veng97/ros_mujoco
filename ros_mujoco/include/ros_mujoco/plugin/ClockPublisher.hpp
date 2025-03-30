@@ -47,16 +47,15 @@ class ClockPublisher
      */
     void compute(const mjModel* m, mjData* d, int plugin_id);
 
+  protected:
     /** \brief Constructor.
         \param m model
         \param d data
         \param topic_name topic name of clock
         \param publish_rate publish rate
-        \param use_sim_time value of `use_sim_time` rosparam
     */
     ClockPublisher(const mjModel* m, mjData* d, const std::string& topic_name, const mjtNum& publish_rate);
 
-  protected:
     //! ROS context
     std::shared_ptr<RosContext> ros_context_;
 

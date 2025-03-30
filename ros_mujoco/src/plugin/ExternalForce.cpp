@@ -33,7 +33,7 @@ void ExternalForce::registerPlugin()
 
     plugin.init = +[](const mjModel* m, mjData* d, int plugin_id) {
         auto* plugin_instance = ExternalForce::create(m, d, plugin_id);
-        if (!plugin_instance)
+        if (plugin_instance == nullptr)
         {
             return -1;
         }
@@ -171,10 +171,10 @@ void ExternalForce::compute(const mjModel*, // m
     mjtNum moment[3];
     mju_cross(moment, moment_arm, force);
 
-    mjtNum* data_force = d->xfrc_applied + 6 * body_id_;
-    mjtNum* data_moment = d->xfrc_applied + 6 * body_id_ + 3;
-    mju_copy3(data_force, force);
-    mju_copy3(data_moment, moment);
+    mjtNum* ptr_force = d->xfrc_applied + 6 * body_id_;
+    mjtNum* ptr_moment = d->xfrc_applied + 6 * body_id_ + 3;
+    mju_copy3(ptr_force, force);
+    mju_copy3(ptr_moment, moment);
 
     if (end_time_ < 0)
     {
@@ -230,7 +230,7 @@ void ExternalForce::visualize(const mjModel*, // m
     }
 
     float rgba[4] = {1.0, 0.0, 0.0, 1.0};
-    constexpr mjtNum width = 0.01;
+    const mjtNum width = 0.01;
     mjvGeom* force_geom = scn->geoms + scn->ngeom;
     mjv_initGeom(force_geom, mjGEOM_ARROW, dir, pos_world, NULL, rgba);
     force_geom->size[0] = static_cast<float>(width);
@@ -246,7 +246,7 @@ void ExternalForce::visualize(const mjModel*, // m
     mjtNum arrow_end[3];
     mju_addScl3(arrow_end, pos_world, force, vis_scale_);
     float rgba[4] = {1.0, 0.0, 0.0, 1.0};
-    constexpr mjtNum width = 0.01;
+    const mjtNum width = 0.01;
     mjvGeom* force_geom = scn->geoms + scn->ngeom;
     mjv_initGeom(force_geom, mjGEOM_NONE, NULL, NULL, NULL, rgba);
     mjv_makeConnector(force_geom, mjGEOM_ARROW, width, pos_world[0], pos_world[1], pos_world[2], arrow_end[0], arrow_end[1], arrow_end[2]);

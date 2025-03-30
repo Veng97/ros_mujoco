@@ -60,7 +60,7 @@
     <general name="camera_pan" joint="camera_pan" biastype="affine" biasprm="0 -1"/>
     <general name="camera_tilt" joint="camera_tilt" biastype="affine" biasprm="0 -1"/>
     <general name="camera_roll" joint="camera_roll" biastype="affine" biasprm="0 -1"/>
-    <plugin joint="camera_pan" plugin="RosMujoco::ActuatorCommand">
+    <plugin name="camera_pan_control" joint="camera_pan" plugin="RosMujoco::ActuatorCommand">
       <config key="actuator_name" value="camera_pan"/>
       <config key="topic_name" value="/camera_pan"/>
     </plugin>

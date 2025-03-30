@@ -23,20 +23,15 @@ void ActuatorCommand::registerPlugin()
     plugin.nattribute = sizeof(attributes) / sizeof(attributes[0]);
     plugin.attributes = attributes;
 
-    plugin.nstate = +[](const mjModel*, // m
-                        int             // plugin_id
-                     ) { return 0; };
+    plugin.nstate = +[](const mjModel*, int) { return 0; };
 
-    plugin.nsensordata = +[](const mjModel*, // m
-                             int,            // plugin_id
-                             int             // sensor_id
-                          ) { return 0; };
+    plugin.nsensordata = +[](const mjModel*, int, int) { return 0; };
 
     plugin.needstage = mjSTAGE_VEL;
 
     plugin.init = +[](const mjModel* m, mjData* d, int plugin_id) {
         auto* plugin_instance = ActuatorCommand::create(m, d, plugin_id);
-        if (!plugin_instance)
+        if (plugin_instance == nullptr)
         {
             return -1;
         }
@@ -49,15 +44,12 @@ void ActuatorCommand::registerPlugin()
         d->plugin_data[plugin_id] = 0;
     };
 
-    plugin.reset = +[](const mjModel* m, double*, // plugin_state
-                       void* plugin_data, int plugin_id) {
+    plugin.reset = +[](const mjModel* m, double*, void* plugin_data, int plugin_id) {
         auto* plugin_instance = reinterpret_cast<class ActuatorCommand*>(plugin_data);
         plugin_instance->reset(m, plugin_id);
     };
 
-    plugin.compute = +[](const mjModel* m, mjData* d, int plugin_id,
-                         int // capability_bit
-                      ) {
+    plugin.compute = +[](const mjModel* m, mjData* d, int plugin_id, int) {
         auto* plugin_instance = reinterpret_cast<class ActuatorCommand*>(d->plugin_data[plugin_id]);
         plugin_instance->compute(m, d, plugin_id);
     };
@@ -84,29 +76,21 @@ ActuatorCommand* ActuatorCommand::create(const mjModel* m, mjData* d, int plugin
     }
     if (actuator_id == m->nu)
     {
-        mju_error("[ActuatorCommand] The actuator with the specified name not found.");
+        mju_error("[ActuatorCommand] The actuator with the specified name was not found.");
         return nullptr;
     }
 
     // Option: topic_name
-    const char* topic_name_char = mj_getPluginConfig(m, plugin_id, "topic_name");
-    std::string topic_name = "";
-    if (strlen(topic_name_char) > 0)
-    {
-        topic_name = std::string(topic_name_char);
-    }
+    std::string topic_name{mj_getPluginConfig(m, plugin_id, "topic_name")};
 
     return new ActuatorCommand(m, d, actuator_id, topic_name);
 }
 
-ActuatorCommand::ActuatorCommand(const mjModel* m,
-                                 mjData*, // d
-                                 int actuator_id,
-                                 std::string topic_name)
+ActuatorCommand::ActuatorCommand(const mjModel* m, mjData*, int actuator_id, std::string topic_name)
     : ros_context_(RosContext::getInstance()),
       actuator_id_(actuator_id)
 {
-    std::string actuator_name = std::string(mj_id2name(m, mjOBJ_ACTUATOR, actuator_id));
+    const std::string actuator_name{mj_id2name(m, mjOBJ_ACTUATOR, actuator_id)};
 
     if (topic_name.empty())
     {
@@ -120,16 +104,11 @@ ActuatorCommand::ActuatorCommand(const mjModel* m,
     std::cout << std::flush;
 }
 
-void ActuatorCommand::reset(const mjModel*, // m
-                            int             // plugin_id
-)
+void ActuatorCommand::reset(const mjModel*, int)
 {
 }
 
-void ActuatorCommand::compute(const mjModel*, // m
-                              mjData* d,
-                              int // plugin_id
-)
+void ActuatorCommand::compute(const mjModel*, mjData* d, int)
 {
     ros_context_->spinUntilComplete(d);
 
