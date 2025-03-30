@@ -151,8 +151,7 @@ ImagePublisher* ImagePublisher::create(const mjModel* m, mjData* d, int plugin_i
   return new ImagePublisher(m, d, sensor_id, frame_id, color_topic_name, depth_topic_name, info_topic_name, height, width, publish_rate);
 }
 
-ImagePublisher::ImagePublisher(const mjModel* m, mjData*, int sensor_id, std::string frame_id, std::string color_topic_name, std::string depth_topic_name, std::string info_topic_name, int height,
-                               int width, mjtNum publish_rate)
+ImagePublisher::ImagePublisher(const mjModel* m, mjData*, int sensor_id, std::string frame_id, std::string color_topic_name, std::string depth_topic_name, std::string info_topic_name, int height, int width, mjtNum publish_rate)
     : ros_context_(RosContext::getInstance())
     , sensor_id_(sensor_id)
     , camera_id_(m->sensor_objid[sensor_id])

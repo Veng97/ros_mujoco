@@ -63,8 +63,7 @@ class ImagePublisher {
       \param width image width
       \param publish_rate publish rate
   */
-  ImagePublisher(const mjModel* m, mjData* d, int sensor_id, std::string frame_id, std::string color_topic_name, std::string depth_topic_name, std::string info_topic_name, int height, int width,
-                 mjtNum publish_rate);
+  ImagePublisher(const mjModel* m, mjData* d, int sensor_id, std::string frame_id, std::string color_topic_name, std::string depth_topic_name, std::string info_topic_name, int height, int width, mjtNum publish_rate);
 
   //! ROS context
   std::shared_ptr<RosContext> ros_context_;

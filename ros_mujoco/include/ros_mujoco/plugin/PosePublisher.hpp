@@ -60,8 +60,7 @@ class PosePublisher {
       \param output_tf whether to broadcast TF
       \param tf_child_frame_id child frame ID for TF
   */
-  PosePublisher(const mjModel* m, mjData* d, int sensor_id, const std::string& frame_id, const std::string& pose_topic_name, const std::string& vel_topic_name, mjtNum publish_rate, bool output_tf,
-                const std::string& tf_child_frame_id);
+  PosePublisher(const mjModel* m, mjData* d, int sensor_id, const std::string& frame_id, const std::string& pose_topic_name, const std::string& vel_topic_name, mjtNum publish_rate, bool output_tf, const std::string& tf_child_frame_id);
 
   //! ROS context
   std::shared_ptr<RosContext> ros_context_;

@@ -136,8 +136,7 @@ PosePublisher* PosePublisher::create(const mjModel* m, mjData* d, int plugin_id)
   return new PosePublisher(m, d, sensor_id, frame_id, pose_topic_name, vel_topic_name, publish_rate, output_tf, tf_child_frame_id);
 }
 
-PosePublisher::PosePublisher(const mjModel* m, mjData*, int sensor_id, const std::string& frame_id, const std::string& pose_topic_name, const std::string& vel_topic_name, mjtNum publish_rate,
-                             bool output_tf, const std::string& tf_child_frame_id)
+PosePublisher::PosePublisher(const mjModel* m, mjData*, int sensor_id, const std::string& frame_id, const std::string& pose_topic_name, const std::string& vel_topic_name, mjtNum publish_rate, bool output_tf, const std::string& tf_child_frame_id)
     : ros_context_(RosContext::getInstance())
     , sensor_id_(sensor_id)
     , body_id_(m->sensor_objid[sensor_id])
