@@ -1,15 +1,45 @@
 ---
 Language: Cpp
-BasedOnStyle: Microsoft
-IndentWidth: 4
-TabWidth: 4
-UseTab: Never
-ColumnLimit: 0
-IncludeBlocks: Preserve
+BasedOnStyle: Google
+
+ColumnLimit: 200
+
 BreakBeforeBraces: Custom
-DerivePointerAlignment: false
-PointerAlignment: Left
-ReflowComments: true
+BraceWrapping:
+  AfterFunction: true
+  AfterControlStatement: true
+  AfterEnum: true
+  AfterStruct: true
+  AfterClass: false
+  AfterNamespace: false
+
+BreakConstructorInitializers: BeforeComma
+ConstructorInitializerAllOnOneLineOrOnePerLine: false
+AllowAllConstructorInitializersOnNextLine: false
+BinPackArguments: false
+
+SortIncludes: true
+IncludeBlocks: Regroup
+IncludeCategories:
+  # Standard library headers (no extension)
+  - Regex: '^<[^.]*>$'
+    Priority: 1
+  # MuJoCo library headers
+  - Regex: '^<mujoco.*>$'
+    Priority: 2
+  # C headers (with .h extension)
+  - Regex: '^<.*\.h>$'
+    Priority: 3
+  # C++ headers (with .hpp extension)
+  - Regex: '^<.*\.hpp>$'
+    Priority: 4
+  # Other headers
+  - Regex: '^<.*>'
+    Priority: 5
+  # Local project headers
+  - Regex: '^".*"'
+    Priority: 6
+
 ---
 Language: Proto
 BasedOnStyle: Google
