@@ -58,8 +58,6 @@ RUN curl -sSL https://raw.githubusercontent.com/ros/rosdistro/master/ros.key -o 
     # Setup/update packages
     && rosdep init \
     && gosu ubuntu rosdep update \
-    # Auto-source packages
-    && echo "source /opt/ros/${ROS_DISTRO}/setup.bash" >> /home/ubuntu/.bashrc \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/* 
 
@@ -75,11 +73,11 @@ ENV RCUTILS_CONSOLE_OUTPUT_FORMAT="[{severity} {date_time_with_ms}] [{name}]: {m
 COPY . /tmp/workspace
 RUN apt-get update -y -qq \
     && gosu ubuntu rosdep install --from-paths /tmp/workspace --ignore-src -r -y \
-    # Cleanup src directory (it should be mounted at runtime)
-    && rm -rf /tmp/workspace \
-    # Auto-source the workspace if it exists in the directory
-    && echo "if [ -f install/setup.bash ]; then echo -e 'Found workspace install directory ('\$(pwd)/install/setup.bash')\nSourcing packages with: source install/setup.bash'; source install/setup.bash; fi" >> /home/ubuntu/.bashrc \
     && apt-get clean \
-    && rm -rf /var/lib/apt/lists/*
+    && rm -rf /tmp/workspace \
+    && rm -rf /var/lib/apt/lists/* \
+    # Auto-source packages
+    && echo "source /opt/ros/${ROS_DISTRO}/setup.bash" >> /home/ubuntu/.bashrc \
+    && echo "if [ -f install/setup.bash ]; then echo -e 'Found workspace install directory ('\$(pwd)/install/setup.bash')\nSourcing packages with: source install/setup.bash'; source install/setup.bash; fi" >> /home/ubuntu/.bashrc
 
 USER ubuntu

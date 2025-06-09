@@ -1,5 +1,5 @@
 # Ignore everything
 *
 
-# Exclude package.xml files in all directories/packages
-!**/package.xml
+# Exclude package.xml files in package directories
+!ros_mujoco*/**/package.xml

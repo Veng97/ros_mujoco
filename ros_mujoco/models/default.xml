@@ -85,8 +85,8 @@
       <config key="color_topic_name" value="/image/color"/>
       <config key="depth_topic_name" value="/image/depth"/>
       <config key="info_topic_name" value="/image/camera_info"/>
-      <config key="height" value="240"/>
-      <config key="width" value="320"/>
+      <config key="height" value="600"/>
+      <config key="width" value="720"/>
       <config key="publish_rate" value="30"/>
     </plugin>
     <rangefinder site="object_center" name="box_rangefinder"/>
