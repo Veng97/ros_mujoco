@@ -1,7 +1,18 @@
 # Ros Mujoco
-This package provides a set of plugins for Mujoco to enable communication with ROS. The plugins are designed to be added to the MJCF file, allowing for easy integration with ROS topics and services.
+
+This package provides a set of plugins for Mujoco to enable communication with ROS. Mujoco is automatically installed with CMake and does not require a separate installation.
+The plugins are designed to be added to the MJCF file, allowing for easy integration with ROS topics and services.
+
+This repository is a fork of [MujocoRosUtils](https://github.com/isri-aist/MujocoRosUtils).
+
 
 ## Plugins
+
+The ROS2 plugins for Mujoco share a singleton instance of a `RosContext` object, which grants them access to a node and methods for _spinning_ the node. 
+The `RosContext` creates a node with the name `mujoco` when whose lifetime depends on whether any ROS2 plugin is loaded. The `RosContext` does not use
+a separate thread for spinning, but instead expects the individual plugins to call the `spinUntilComplete` method if they rely on the node to be spun. Notably,
+`spinUntilComplete` is called with the current simulation time, so it only spins _once_ per simulation step.
+
 ### RosMujoco::ClockPublisher
 Plugin to publish clock topic.
 
@@ -163,4 +174,11 @@ This information is not used in the plugin, but is necessary to avoid errors in 
 
 
 ## Development
+
 The development environment is integrated with VSCode. To use it simply open VSCode and run the task to open the workspace in the dev-container.
+
+
+## TODO
+
+The launch file relies on the 'simulation' exectuable that MuJoCo builds by default. That only supports launching with a GUI.
+To support headless simulation, we need to create a custom executable that supports the same arguments for plugins.
