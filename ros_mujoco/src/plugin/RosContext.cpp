@@ -8,7 +8,7 @@ RosContext::RosContext()
 {
   rclcpp::init(0, nullptr);
 
-  node_ = rclcpp::Node::make_shared("mujoco_ros");
+  node_ = rclcpp::Node::make_shared("mujoco");
   executor_ = std::make_shared<rclcpp::executors::SingleThreadedExecutor>();
   executor_->add_node(node_);
 
