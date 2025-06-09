@@ -1,6 +1,6 @@
 #pragma once
 
-#include <string>
+#include "ros_mujoco/plugin/RosContext.hpp"
 
 #include <mujoco/mjdata.h>
 #include <mujoco/mjmodel.h>
@@ -14,7 +14,7 @@
 #include <geometry_msgs/msg/twist_stamped.hpp>
 #include <rclcpp/publisher.hpp>
 
-#include "ros_mujoco/plugin/RosContext.hpp"
+#include <string>
 
 namespace RosMujoco {
 

@@ -1,8 +1,8 @@
-#include <iostream>
+#include "ros_mujoco/plugin/ImagePublisher.hpp"
 
 #include <mujoco/mujoco.h>
 
-#include "ros_mujoco/plugin/ImagePublisher.hpp"
+#include <iostream>
 
 namespace RosMujoco {
 
@@ -202,6 +202,10 @@ ImagePublisher::ImagePublisher(const mjModel* m, mjData*, int sensor_id, std::st
   mjv_defaultScene(&scene_);
   mjr_defaultContext(&context_);
 
+  // Set viewport
+  context_.offWidth = viewport_.width;
+  context_.offHeight = viewport_.height;
+
   // Create scene and context
   mjv_makeScene(m, &scene_, 1000);
   mjr_makeContext(m, &context_, mjFONTSCALE_100);
@@ -210,18 +214,12 @@ ImagePublisher::ImagePublisher(const mjModel* m, mjData*, int sensor_id, std::st
   camera_.type = mjCAMERA_FIXED;
   camera_.fixedcamid = camera_id_;
 
-  mjr_setBuffer(mjFB_OFFSCREEN, &context_);
-  if (context_.currentBuffer != mjFB_OFFSCREEN)
-  {
-    mju_error("[ImagePublisher] Offscreen rendering not supported, using default/window framebuffer.");
-  }
-
-  // Allocate buffer
+  // Allocate buffers
   size_t color_buffer_size = sizeof(unsigned char) * 3 * viewport_.width * viewport_.height;
-  size_t depth_buffer_size = sizeof(float) * viewport_.width * viewport_.height;
   color_buffer_ = static_cast<unsigned char*>(std::malloc(color_buffer_size));
-  depth_buffer_ = static_cast<float*>(std::malloc(depth_buffer_size));
   color_buffer_flipped_ = static_cast<unsigned char*>(std::malloc(color_buffer_size));
+  size_t depth_buffer_size = sizeof(float) * viewport_.width * viewport_.height;
+  depth_buffer_ = static_cast<float*>(std::malloc(depth_buffer_size));
   depth_buffer_flipped_ = static_cast<float*>(std::malloc(depth_buffer_size));
 
   // Create interface
@@ -288,47 +286,60 @@ void ImagePublisher::compute(const mjModel* m, mjData* d, int)
   stamp.sec = static_cast<int32_t>(d->time);
   stamp.nanosec = static_cast<uint32_t>((d->time - stamp.sec) * 1e9);
 
-  sensor_msgs::msg::Image color_msg;
-  color_msg.header.stamp = stamp;
-  color_msg.header.frame_id = frame_id_;
-  color_msg.height = viewport_.height;
-  color_msg.width = viewport_.width;
-  color_msg.encoding = "rgb8";
-  color_msg.is_bigendian = 0;
-  color_msg.step = static_cast<unsigned int>(sizeof(unsigned char) * 3 * viewport_.width);
-  color_msg.data.resize(sizeof(unsigned char) * 3 * viewport_.width * viewport_.height);
-  std::memcpy(color_msg.data.data(), color_buffer_flipped_, sizeof(unsigned char) * 3 * viewport_.width * viewport_.height);
-  color_pub_->publish(color_msg);
+  bool publish_color = color_pub_->get_subscription_count() > 0;
+  bool publish_depth = depth_pub_->get_subscription_count() > 0;
+  bool publish_info = info_pub_->get_subscription_count() > 0;
 
-  sensor_msgs::msg::Image depth_msg;
-  depth_msg.header.stamp = stamp;
-  depth_msg.header.frame_id = frame_id_;
-  depth_msg.height = viewport_.height;
-  depth_msg.width = viewport_.width;
-  depth_msg.encoding = "32FC1";
-  depth_msg.is_bigendian = 0;
-  depth_msg.step = static_cast<unsigned int>(sizeof(float) * viewport_.width);
-  depth_msg.data.resize(sizeof(float) * viewport_.width * viewport_.height);
-  std::memcpy(depth_msg.data.data(), depth_buffer_flipped_, sizeof(float) * viewport_.width * viewport_.height);
-  depth_pub_->publish(depth_msg);
+  if (publish_color)
+  {
+    auto color_msg = std::make_unique<sensor_msgs::msg::Image>();
+    color_msg->header.stamp = stamp;
+    color_msg->header.frame_id = frame_id_;
+    color_msg->height = viewport_.height;
+    color_msg->width = viewport_.width;
+    color_msg->encoding = "rgb8";
+    color_msg->is_bigendian = 0;
+    color_msg->step = static_cast<unsigned int>(sizeof(unsigned char) * 3 * viewport_.width);
+    color_msg->data.resize(sizeof(unsigned char) * 3 * viewport_.width * viewport_.height);
+    std::memcpy(color_msg->data.data(), color_buffer_flipped_, sizeof(unsigned char) * 3 * viewport_.width * viewport_.height);
+    color_pub_->publish(std::move(color_msg));
+  }
 
-  sensor_msgs::msg::CameraInfo info_msg;
-  info_msg.header.stamp = stamp;
-  info_msg.header.frame_id = frame_id_;
-  info_msg.height = viewport_.height;
-  info_msg.width = viewport_.width;
-  info_msg.distortion_model = "plumb_bob";
-  info_msg.d.resize(5, 0.0);
-  info_msg.k.fill(0.0);
-  info_msg.r.fill(0.0);
-  info_msg.p.fill(0.0);
-  double focal_scaling = (1.0 / std::tan((m->cam_fovy[camera_id_] * M_PI / 180.0) / 2.0)) * viewport_.height / 2.0;
-  info_msg.k[0] = info_msg.p[0] = focal_scaling;
-  info_msg.k[2] = info_msg.p[2] = static_cast<double>(viewport_.width) / 2.0;
-  info_msg.k[4] = info_msg.p[5] = focal_scaling;
-  info_msg.k[5] = info_msg.p[6] = static_cast<double>(viewport_.height) / 2.0;
-  info_msg.k[8] = info_msg.p[10] = 1.0;
-  info_pub_->publish(info_msg);
+  if (publish_depth)
+  {
+    auto depth_msg = std::make_unique<sensor_msgs::msg::Image>();
+    depth_msg->header.stamp = stamp;
+    depth_msg->header.frame_id = frame_id_;
+    depth_msg->height = viewport_.height;
+    depth_msg->width = viewport_.width;
+    depth_msg->encoding = "32FC1";
+    depth_msg->is_bigendian = 0;
+    depth_msg->step = static_cast<unsigned int>(sizeof(float) * viewport_.width);
+    depth_msg->data.resize(sizeof(float) * viewport_.width * viewport_.height);
+    std::memcpy(depth_msg->data.data(), depth_buffer_flipped_, sizeof(float) * viewport_.width * viewport_.height);
+    depth_pub_->publish(std::move(depth_msg));
+  }
+
+  if (publish_color || publish_depth || publish_info)
+  {
+    auto info_msg = std::make_unique<sensor_msgs::msg::CameraInfo>();
+    info_msg->header.stamp = stamp;
+    info_msg->header.frame_id = frame_id_;
+    info_msg->height = viewport_.height;
+    info_msg->width = viewport_.width;
+    info_msg->distortion_model = "plumb_bob";
+    info_msg->d.resize(5, 0.0);
+    info_msg->k.fill(0.0);
+    info_msg->r.fill(0.0);
+    info_msg->p.fill(0.0);
+    double focal_scaling = (1.0 / std::tan((m->cam_fovy[camera_id_] * M_PI / 180.0) / 2.0)) * viewport_.height / 2.0;
+    info_msg->k[0] = info_msg->p[0] = focal_scaling;
+    info_msg->k[2] = info_msg->p[2] = static_cast<double>(viewport_.width) / 2.0;
+    info_msg->k[4] = info_msg->p[5] = focal_scaling;
+    info_msg->k[5] = info_msg->p[6] = static_cast<double>(viewport_.height) / 2.0;
+    info_msg->k[8] = info_msg->p[10] = 1.0;
+    info_pub_->publish(std::move(info_msg));
+  }
 }
 
 void ImagePublisher::free()

@@ -1,6 +1,6 @@
 #pragma once
 
-#include <string>
+#include "ros_mujoco/plugin/RosContext.hpp"
 
 #include <mujoco/mjdata.h>
 #include <mujoco/mjmodel.h>
@@ -13,7 +13,7 @@
 #include <rclcpp/publisher.hpp>
 #include <ros_mujoco_interfaces/msg/scalar_stamped.hpp>
 
-#include "ros_mujoco/plugin/RosContext.hpp"
+#include <string>
 
 namespace RosMujoco {
 

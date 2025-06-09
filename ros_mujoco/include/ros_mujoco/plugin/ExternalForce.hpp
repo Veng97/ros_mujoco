@@ -1,6 +1,6 @@
 #pragma once
 
-#include <string>
+#include "ros_mujoco/plugin/RosContext.hpp"
 
 #include <mujoco/mjdata.h>
 #include <mujoco/mjmodel.h>
@@ -10,7 +10,7 @@
 #include <rclcpp/subscription.hpp>
 #include <ros_mujoco_interfaces/msg/external_force.hpp>
 
-#include "ros_mujoco/plugin/RosContext.hpp"
+#include <string>
 
 namespace RosMujoco {
 

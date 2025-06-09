@@ -1,6 +1,6 @@
 #pragma once
 
-#include <string>
+#include "ros_mujoco/plugin/RosContext.hpp"
 
 #include <mujoco/mjdata.h>
 #include <mujoco/mjmodel.h>
@@ -14,7 +14,7 @@
 #include <sensor_msgs/msg/camera_info.hpp>
 #include <sensor_msgs/msg/image.hpp>
 
-#include "ros_mujoco/plugin/RosContext.hpp"
+#include <string>
 
 namespace RosMujoco {
 

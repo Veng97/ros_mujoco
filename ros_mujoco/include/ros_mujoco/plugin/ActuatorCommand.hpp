@@ -1,7 +1,6 @@
 #pragma once
 
-#include <limits>
-#include <string>
+#include "ros_mujoco/plugin/RosContext.hpp"
 
 #include <mujoco/mjdata.h>
 #include <mujoco/mjmodel.h>
@@ -11,7 +10,8 @@
 #include <rclcpp/subscription.hpp>
 #include <std_msgs/msg/float64.hpp>
 
-#include "ros_mujoco/plugin/RosContext.hpp"
+#include <limits>
+#include <string>
 
 namespace RosMujoco {
 

@@ -5,14 +5,15 @@
 	"customizations": {
 		"vscode": {
 			"extensions": [
-				"llvm-vs-code-extensions.vscode-clangd", // Adds code scanning and intellisense via. Clangd (scanning based on '.clangd' and '.clang-format' files)
-				"ms-vscode.cpptools", // Adds debugging features to VSCode
-				"jeff-hykin.better-cpp-syntax", // Cpp highlighting
-				"zchrissirhcz.cmake-highlight", // CMake highlighting
-				"ms-python.python", // Python highlighting
-				"charliermarsh.ruff", // Python formatting and linting
-				"mhutchie.git-graph", // Visual representation of the Git tree
-				"natqe.reload" // Allows reloading VSCode to apply change or fix weird behavior (button in lower right corner)
+				"llvm-vs-code-extensions.vscode-clangd",
+				"ms-vscode.cpptools",
+				"jeff-hykin.better-cpp-syntax",
+				"zchrissirhcz.cmake-highlight",
+				"ms-python.python",
+				"charliermarsh.ruff",
+				"mhutchie.git-graph",
+				"natqe.reload",
+				"actboy168.tasks"
 			]
 		}
 	}

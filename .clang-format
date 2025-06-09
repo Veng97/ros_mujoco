@@ -21,8 +21,8 @@ BinPackArguments: false
 SortIncludes: true
 IncludeBlocks: Regroup
 IncludeCategories:
-  # Standard library headers (no extension)
-  - Regex: '^<[^.]*>$'
+  # Local project headers
+  - Regex: '^".*"'
     Priority: -2
   # MuJoCo library headers
   - Regex: '^<mujoco.*>$'
@@ -36,8 +36,8 @@ IncludeCategories:
   # Other headers
   - Regex: '^<.*>'
     Priority: 2
-  # Local project headers
-  - Regex: '^".*"'
+  # Standard library headers (no extension)
+  - Regex: '^<[^.]*>$'
     Priority: 3
 ---
 Language: Proto

@@ -1,9 +1,9 @@
 
-#include <iostream>
+#include "ros_mujoco/plugin/ActuatorCommand.hpp"
 
 #include <mujoco/mujoco.h>
 
-#include "ros_mujoco/plugin/ActuatorCommand.hpp"
+#include <iostream>
 
 namespace RosMujoco {
 

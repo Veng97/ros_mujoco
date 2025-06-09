@@ -1,7 +1,6 @@
 #pragma once
 
-#include <memory>
-#include <string>
+#include "ros_mujoco/plugin/RosContext.hpp"
 
 #include <mujoco/mjdata.h>
 #include <mujoco/mjmodel.h>
@@ -12,7 +11,8 @@
 #include <rclcpp/publisher.hpp>
 #include <rosgraph_msgs/msg/clock.hpp>
 
-#include "ros_mujoco/plugin/RosContext.hpp"
+#include <memory>
+#include <string>
 
 namespace RosMujoco {
 

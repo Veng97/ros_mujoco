@@ -1,8 +1,8 @@
-#include <iostream>
+#include "ros_mujoco/plugin/SensorPublisher.hpp"
 
 #include <mujoco/mujoco.h>
 
-#include "ros_mujoco/plugin/SensorPublisher.hpp"
+#include <iostream>
 
 namespace RosMujoco {
 

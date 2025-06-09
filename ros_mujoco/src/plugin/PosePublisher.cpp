@@ -1,8 +1,8 @@
-#include <iostream>
+#include "ros_mujoco/plugin/PosePublisher.hpp"
 
 #include <mujoco/mujoco.h>
 
-#include "ros_mujoco/plugin/PosePublisher.hpp"
+#include <iostream>
 
 namespace RosMujoco {
 
